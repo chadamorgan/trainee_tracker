@@ -1296,20 +1296,46 @@
              for (const line of lines) {
                 const parts = line.split(';');
                 if (parts.length >= 2) {
-                    const [rank, name, gender] = parts[0].trim().split(',').map(s => s.trim());
+                    const traineeInfo = parts[0].trim().split(',').map(s => s.trim());
                     const platoon = parts[1].trim();
 
-                    if (rank && name && gender && platoon) {
-                         const newTraineeData = {
-                            name, platoon, rank, gender, status: 'Present', location: '',
-                            history: [{ type: 'Added', details: 'Trainee added via bulk upload.', timestamp: Timestamp.now() }],
-                            profile: { restriction: '', endDate: '' }, appointments: [], fitness: {}, counselingHistory: [], trainingEvents: [], customNotes: []
-                        };
-                        try {
-                           await addDoc(traineesColRef, newTraineeData);
-                        } catch (e) {
-                           console.error("Failed to add trainee:", name, e);
+                    // Robustly parse trainee info to handle complex names
+                    if (traineeInfo.length >= 3) { // Must have at least Rank, Name, Gender
+                        const rank = traineeInfo[0];
+                        const gender = traineeInfo[traineeInfo.length - 1];
+                        const name = traineeInfo.slice(1, traineeInfo.length - 1).join(' ');
+
+                        // Validate gender to be one of the expected values
+                        const validGenders = ['Male', 'Female', 'Other'];
+                        // Capitalize first letter, lowercase the rest for consistency.
+                        const normalizedGender = gender.charAt(0).toUpperCase() + gender.slice(1).toLowerCase();
+
+                        if (rank && name && platoon && validGenders.includes(normalizedGender)) {
+                             const newTraineeData = {
+                                name, 
+                                platoon, 
+                                rank, 
+                                gender: normalizedGender, // Use the normalized gender
+                                status: 'Present', 
+                                location: '',
+                                history: [{ type: 'Added', details: 'Trainee added via bulk upload.', timestamp: Timestamp.now() }],
+                                profile: { restriction: '', endDate: '' }, 
+                                appointments: [], 
+                                fitness: {}, 
+                                counselingHistory: [], 
+                                trainingEvents: [], 
+                                customNotes: []
+                            };
+                            try {
+                               await addDoc(traineesColRef, newTraineeData);
+                            } catch (e) {
+                               console.error("Failed to add trainee:", name, e);
+                            }
+                        } else {
+                           console.warn("Skipping invalid line (check rank, name, platoon, and gender):", line);
                         }
+                    } else {
+                        console.warn("Skipping line with not enough parts:", line);
                     }
                 }
              }
