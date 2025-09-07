@@ -340,23 +340,40 @@
 
     <!-- Manage Training Events Modal -->
     <div id="manageTrainingModal" class="modal fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900 bg-opacity-75 hidden">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-auto p-6 md:p-8">
-            <div class="flex justify-between items-center pb-4 border-b">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-auto p-6 md:p-8 flex flex-col h-[90vh]">
+            <div class="flex justify-between items-center pb-4 border-b flex-shrink-0">
                 <h3 class="text-2xl font-bold text-gray-900">Manage Training Events</h3>
                 <button id="closeManageTrainingBtn" class="text-gray-400 hover:text-gray-600 font-bold text-2xl">&times;</button>
             </div>
-            <div class="py-4 space-y-4">
-                <p class="text-gray-700">Define the events your trainees will complete during the cycle.</p>
-                <div class="flex space-x-2">
-                    <input type="text" id="newTrainingEventName" placeholder="New Event Name" class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                    <button id="addTrainingEventBtn" class="px-4 py-2 text-sm font-semibold rounded-lg text-white bg-blue-600 hover:bg-blue-700 whitespace-nowrap">Add Event</button>
+            <div class="py-4 space-y-4 flex-1 overflow-y-auto min-h-0">
+                <div class="space-y-2">
+                    <h4 class="text-lg font-bold text-gray-800">Define Training Events</h4>
+                    <div class="flex space-x-2">
+                        <input type="text" id="newTrainingEventName" placeholder="New Event Name" class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <button id="addTrainingEventBtn" class="px-4 py-2 text-sm font-semibold rounded-lg text-white bg-blue-600 hover:bg-blue-700 whitespace-nowrap">Add Event</button>
+                    </div>
+                    <div id="trainingEventsManagementList" class="space-y-2 max-h-32 overflow-y-auto">
+                        <!-- Events will be populated here -->
+                    </div>
                 </div>
-                <div id="trainingEventsManagementList" class="space-y-2 max-h-64 overflow-y-auto">
-                    <!-- Events will be populated here -->
+                <div class="space-y-2">
+                    <h4 class="text-lg font-bold text-gray-800">Update Event Status by Platoon</h4>
+                    <p class="text-sm text-gray-600">Select an event and platoon. Deselect trainees who did NOT complete the event.</p>
+                    <div class="flex space-x-2">
+                        <select id="updateEventSelector" class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            <option value="">Select an Event</option>
+                        </select>
+                        <select id="updatePlatoonSelector" class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            <option value="All">All Platoons</option>
+                        </select>
+                    </div>
+                    <div id="traineeEventUpdateList" class="space-y-2 max-h-48 overflow-y-auto mt-4">
+                        <!-- Trainees will be injected here for update -->
+                    </div>
                 </div>
             </div>
-            <div class="flex justify-end pt-4 border-t">
-                <button id="saveTrainingEventsBtn" class="px-4 py-2 text-sm font-semibold rounded-lg text-white bg-green-600 hover:bg-green-700">Done</button>
+            <div class="flex justify-end pt-4 border-t flex-shrink-0">
+                <button id="updateTraineeEventsBtn" class="px-4 py-2 text-sm font-semibold rounded-lg text-white bg-green-600 hover:bg-green-700">Update Selected Trainees</button>
             </div>
         </div>
     </div>
@@ -451,6 +468,11 @@
         const newTrainingEventNameEl = document.getElementById('newTrainingEventName');
         const addTrainingEventBtn = document.getElementById('addTrainingEventBtn');
         const trainingEventsManagementListEl = document.getElementById('trainingEventsManagementList');
+        const updateEventSelectorEl = document.getElementById('updateEventSelector');
+        const updatePlatoonSelectorEl = document.getElementById('updatePlatoonSelector');
+        const traineeEventUpdateListEl = document.getElementById('traineeEventUpdateList');
+        const updateTraineeEventsBtn = document.getElementById('updateTraineeEventsBtn');
+
 
         const traineeSearchEl = document.getElementById('traineeSearch');
         const platoonFilterEl = document.getElementById('platoonFilter');
@@ -707,6 +729,7 @@
                 snapshot.forEach(doc => {
                     globalTrainingEvents.push({ id: doc.id, ...doc.data() });
                 });
+                populateTrainingEventSelectors();
             }, (error) => {
                 console.error("Error fetching global training events:", error);
                 errorMessageEl.classList.remove('hidden');
@@ -796,6 +819,27 @@
                 dashboardPlatoonFilterEl.appendChild(option);
             });
             dashboardPlatoonFilterEl.value = currentDashboardFilter;
+
+            // Populate update training platoon filter
+            const currentUpdateFilter = updatePlatoonSelectorEl.value;
+            updatePlatoonSelectorEl.innerHTML = '<option value="All">Entire Company Roster</option>';
+             sortedPlatoons.forEach(platoon => {
+                const option = document.createElement('option');
+                option.value = platoon;
+                option.textContent = platoon;
+                updatePlatoonSelectorEl.appendChild(option);
+            });
+            updatePlatoonSelectorEl.value = currentUpdateFilter;
+        };
+
+        const populateTrainingEventSelectors = () => {
+            updateEventSelectorEl.innerHTML = '<option value="">Select an Event</option>';
+            globalTrainingEvents.forEach(event => {
+                const option = document.createElement('option');
+                option.value = event.id;
+                option.textContent = event.name;
+                updateEventSelectorEl.appendChild(option);
+            });
         };
 
         const renderTraineeList = () => {
@@ -1418,6 +1462,97 @@
                 });
             });
         };
+
+        const renderTraineeEventUpdateList = () => {
+            const selectedEventId = updateEventSelectorEl.value;
+            const selectedPlatoon = updatePlatoonSelectorEl.value;
+            traineeEventUpdateListEl.innerHTML = '';
+            
+            if (!selectedEventId) {
+                traineeEventUpdateListEl.innerHTML = '<p class="text-center text-gray-500">Please select a training event.</p>';
+                return;
+            }
+
+            let filteredTrainees = traineesData;
+            if (selectedPlatoon !== 'All') {
+                filteredTrainees = traineesData.filter(trainee => trainee.platoon === selectedPlatoon);
+            }
+            
+            if (filteredTrainees.length === 0) {
+                 traineeEventUpdateListEl.innerHTML = '<p class="text-center text-gray-500">No trainees found for this platoon.</p>';
+                 return;
+            }
+
+            filteredTrainees.forEach(trainee => {
+                let completedEvents = [];
+                try {
+                    completedEvents = JSON.parse(trainee.trainingEvents || '[]');
+                } catch(e) {
+                    console.error("Failed to parse trainee events:", e);
+                }
+
+                const hasCompleted = completedEvents.includes(selectedEventId);
+                const traineeItem = document.createElement('div');
+                traineeItem.className = 'flex items-center space-x-2 p-2 bg-gray-50 rounded-lg';
+                traineeItem.innerHTML = `
+                    <input type="checkbox" id="update-event-${trainee.id}" data-trainee-id="${trainee.id}" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" ${hasCompleted ? 'checked' : ''}>
+                    <label for="update-event-${trainee.id}" class="block text-sm text-gray-900 flex-1">${trainee.name} - ${trainee.platoon}</label>
+                `;
+                traineeEventUpdateListEl.appendChild(traineeItem);
+            });
+        };
+        
+        updateEventSelectorEl.addEventListener('change', renderTraineeEventUpdateList);
+        updatePlatoonSelectorEl.addEventListener('change', renderTraineeEventUpdateList);
+
+        updateTraineeEventsBtn.addEventListener('click', async () => {
+            const selectedEventId = updateEventSelectorEl.value;
+            if (!selectedEventId) {
+                // Show custom alert modal
+                return;
+            }
+
+            const traineeCheckboxes = traineeEventUpdateListEl.querySelectorAll('input[type="checkbox"]');
+            
+            for (const checkbox of traineeCheckboxes) {
+                const traineeId = checkbox.dataset.traineeId;
+                const trainee = traineesData.find(t => t.id === traineeId);
+                if (!trainee) continue;
+                
+                let completedEvents = [];
+                try {
+                    completedEvents = JSON.parse(trainee.trainingEvents || '[]');
+                } catch(e) {
+                    console.error("Failed to parse trainee events:", e);
+                    continue;
+                }
+                
+                const hasCompleted = completedEvents.includes(selectedEventId);
+                const isChecked = checkbox.checked;
+                
+                if (isChecked && !hasCompleted) {
+                    // Add event
+                    completedEvents.push(selectedEventId);
+                    try {
+                        const traineeDocRef = doc(db, `artifacts/${traineeAppId}/users/${userId}/trainees/${traineeId}`);
+                        await setDoc(traineeDocRef, { trainingEvents: JSON.stringify(completedEvents) }, { merge: true });
+                    } catch (error) {
+                        console.error(`Error updating trainee ${traineeId}:`, error);
+                    }
+                } else if (!isChecked && hasCompleted) {
+                    // Remove event
+                    completedEvents = completedEvents.filter(id => id !== selectedEventId);
+                     try {
+                        const traineeDocRef = doc(db, `artifacts/${traineeAppId}/users/${userId}/trainees/${traineeId}`);
+                        await setDoc(traineeDocRef, { trainingEvents: JSON.stringify(completedEvents) }, { merge: true });
+                    } catch (error) {
+                        console.error(`Error updating trainee ${traineeId}:`, error);
+                    }
+                }
+            }
+            manageTrainingModal.classList.add('hidden');
+            document.body.classList.remove('modal-open');
+        });
 
     </script>
 </body>
