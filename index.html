@@ -93,6 +93,12 @@
                     <!-- Appointments will be populated here -->
                 </ul>
             </div>
+            <div class="mt-4">
+                <h4 class="text-md font-semibold text-gray-800">High Priority Issues:</h4>
+                <ul id="highPriorityIssuesList" class="mt-2 space-y-1 text-sm text-gray-600">
+                    <!-- High priority notes will be populated here -->
+                </ul>
+            </div>
         </div>
 
         <!-- Add Trainee Form (Initially Hidden) -->
@@ -130,6 +136,7 @@
                 <div id="traineeList" class="space-y-4">
                     <!-- Trainee cards will be injected here -->
                 </div>
+                <p id="errorMessage" class="hidden text-center text-red-500">Error loading data. Please check your Firebase settings.</p>
             </div>
         </div>
     </div>
@@ -211,6 +218,29 @@
                             <input type="text" id="newCounselingDesc" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                         </div>
                         <button id="addCounselingBtn" class="px-4 py-2 text-sm font-semibold rounded-lg text-white bg-blue-600 hover:bg-blue-700 whitespace-nowrap">Add</button>
+                    </div>
+                </div>
+                
+                <!-- Custom Notes -->
+                <div class="space-y-2">
+                    <h4 class="text-lg font-bold text-gray-800">Custom Notes</h4>
+                    <div id="notesList" class="space-y-2">
+                        <!-- Notes will be injected here -->
+                    </div>
+                    <div class="flex space-x-2 items-end">
+                        <div class="flex-1">
+                            <label for="newNoteText" class="block text-sm font-medium text-gray-700">New Note:</label>
+                            <textarea id="newNoteText" rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                        </div>
+                        <div class="w-1/3">
+                            <label for="newNotePriority" class="block text-sm font-medium text-gray-700">Priority:</label>
+                            <select id="newNotePriority" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                <option value="Low">Low</option>
+                                <option value="Medium">Medium</option>
+                                <option value="High">High</option>
+                            </select>
+                        </div>
+                        <button id="addNoteBtn" class="px-4 py-2 text-sm font-semibold rounded-lg text-white bg-blue-600 hover:bg-blue-700 whitespace-nowrap">Add</button>
                     </div>
                 </div>
 
@@ -359,6 +389,7 @@
         const unqualifiedCountEl = document.getElementById('unqualifiedCount');
         const acftFailCountEl = document.getElementById('acftFailCount');
         const upcomingAppointmentsListEl = document.getElementById('upcomingAppointmentsList');
+        const highPriorityIssuesListEl = document.getElementById('highPriorityIssuesList');
 
         const addTraineeBtn = document.getElementById('addTraineeBtn');
         const addTraineeFormContainer = document.getElementById('addTraineeFormContainer');
@@ -366,6 +397,7 @@
         const traineeForm = document.getElementById('traineeForm');
         const traineeList = document.getElementById('traineeList');
         const loadingStatusEl = document.getElementById('loadingStatus');
+        const errorMessageEl = document.getElementById('errorMessage');
 
         const traineeModal = document.getElementById('traineeModal');
         const closeModalBtn = document.getElementById('closeModalBtn');
@@ -419,6 +451,11 @@
         const bulkAddCancelBtn = document.getElementById('bulkAddCancelBtn');
         const bulkAddSaveBtn = document.getElementById('bulkAddSaveBtn');
         const bulkTraineeInput = document.getElementById('bulkTraineeInput');
+
+        const notesListEl = document.getElementById('notesList');
+        const newNoteTextEl = document.getElementById('newNoteText');
+        const newNotePriorityEl = document.getElementById('newNotePriority');
+        const addNoteBtn = document.getElementById('addNoteBtn');
         
         let currentEditingTraineeId = null;
         let platoons = new Set();
@@ -512,6 +549,31 @@
             }
         };
 
+        const checkForHighPriorityNotes = (trainees) => {
+            const highPriorityIssues = [];
+            trainees.forEach(trainee => {
+                const notes = JSON.parse(trainee.customNotes || '[]');
+                notes.forEach(note => {
+                    if (note.priority === 'High') {
+                        highPriorityIssues.push({ name: trainee.name, note: note.text });
+                    }
+                });
+            });
+
+            highPriorityIssuesListEl.innerHTML = '';
+            if (highPriorityIssues.length > 0) {
+                highPriorityIssues.forEach(issue => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = `${issue.name}: ${issue.note}`;
+                    highPriorityIssuesListEl.appendChild(listItem);
+                });
+            } else {
+                const listItem = document.createElement('li');
+                listItem.textContent = 'No high-priority issues at this time.';
+                highPriorityIssuesListEl.appendChild(listItem);
+            }
+        };
+
         // Check for daily check-in
         const performDailyCheckIn = async () => {
             const userDocRef = doc(db, `artifacts/${traineeAppId}/users/${userId}/_metadata/app`);
@@ -597,10 +659,13 @@
                 });
             }, (error) => {
                 console.error("Error fetching global training events:", error);
+                errorMessageEl.classList.remove('hidden');
+                loadingStatusEl.classList.add('hidden');
             });
         
             onSnapshot(qTrainees, (snapshot) => {
                 loadingStatusEl.style.display = 'none';
+                errorMessageEl.classList.add('hidden');
                 traineesData = [];
                 platoons.clear();
                 const statusCounts = { 'Present': 0, 'Sick Call': 0, 'On Leave': 0, 'Absent': 0, 'Other': 0 };
@@ -653,10 +718,13 @@
                 populatePlatoonFilter();
                 renderTraineeList();
                 checkForUpcomingAppointments(traineesData);
+                checkForHighPriorityNotes(traineesData);
                 performDailyCheckIn();
             }, (error) => {
                 console.error("Error fetching trainees:", error);
-                traineeList.innerHTML = `<p class="text-center text-red-500">Error loading data: ${error.message}</p>`;
+                loadingStatusEl.style.display = 'none';
+                errorMessageEl.classList.remove('hidden');
+                traineeList.innerHTML = '';
             });
         };
 
@@ -758,7 +826,8 @@
                     appointments: JSON.stringify([]),
                     fitness: JSON.stringify({ acftScore: '', runTime: '', rifleQual: '' }),
                     counselingHistory: JSON.stringify([]),
-                    trainingEvents: JSON.stringify([])
+                    trainingEvents: JSON.stringify([]),
+                    customNotes: JSON.stringify([])
                 };
                 await addDoc(traineesColRef, newTraineeData);
                 traineeForm.reset();
@@ -826,6 +895,52 @@
                     records = records.filter(record => record.timestamp !== timestamp);
                     currentTrainee.counselingHistory = JSON.stringify(records);
                     showTraineeModal(currentTrainee);
+                });
+            });
+
+            // Populate custom notes
+            let customNotes = [];
+            try {
+                customNotes = JSON.parse(trainee.customNotes || '[]');
+            } catch(e) {
+                console.error("Failed to parse custom notes:", e);
+            }
+            notesListEl.innerHTML = customNotes.map(note => `
+                <div class="p-2 bg-gray-100 rounded-lg text-sm flex justify-between items-start">
+                    <div class="flex-1 space-y-1">
+                        <div class="flex items-center">
+                            <span class="px-2 py-0.5 text-xs font-semibold rounded-full ${
+                                note.priority === 'High' ? 'bg-red-200 text-red-800' :
+                                note.priority === 'Medium' ? 'bg-yellow-200 text-yellow-800' :
+                                'bg-gray-200 text-gray-800'
+                            }">${note.priority}</span>
+                            <span class="ml-2 text-gray-700">${note.text}</span>
+                        </div>
+                        <p class="text-xs text-gray-500">${formatTimestamp(note.timestamp)}</p>
+                    </div>
+                    <button class="text-red-500 hover:text-red-700 ml-2 delete-note" data-timestamp="${note.timestamp}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm6 0a1 1 0 112 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            `).join('');
+
+            notesListEl.querySelectorAll('.delete-note').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const timestamp = e.currentTarget.dataset.timestamp;
+                    showConfirmation("Delete Note", "Are you sure you want to delete this note?", async () => {
+                        const currentTrainee = traineesData.find(t => t.id === currentEditingTraineeId);
+                        let notes = JSON.parse(currentTrainee.customNotes || '[]');
+                        notes = notes.filter(note => note.timestamp !== timestamp);
+                        try {
+                            const traineeDocRef = doc(db, `artifacts/${traineeAppId}/users/${userId}/trainees/${currentEditingTraineeId}`);
+                            await setDoc(traineeDocRef, { customNotes: JSON.stringify(notes) }, { merge: true });
+                        } catch (error) {
+                            console.error("Error deleting note:", error);
+                        }
+                    });
                 });
             });
 
@@ -923,6 +1038,45 @@
             // Update the in-memory trainee data to be saved later
             currentTrainee.counselingHistory = JSON.stringify(records);
         });
+        
+        // Add a new custom note to the modal's in-memory data
+        addNoteBtn.addEventListener('click', () => {
+            const text = newNoteTextEl.value.trim();
+            const priority = newNotePriorityEl.value;
+            if (!text) return;
+
+            const currentTrainee = traineesData.find(t => t.id === currentEditingTraineeId);
+            let notes = JSON.parse(currentTrainee.customNotes || '[]');
+            const timestamp = new Date().toISOString();
+            notes.push({ timestamp, text, priority });
+
+            notesListEl.innerHTML += `
+                <div class="p-2 bg-gray-100 rounded-lg text-sm flex justify-between items-start">
+                    <div class="flex-1 space-y-1">
+                        <div class="flex items-center">
+                            <span class="px-2 py-0.5 text-xs font-semibold rounded-full ${
+                                priority === 'High' ? 'bg-red-200 text-red-800' :
+                                priority === 'Medium' ? 'bg-yellow-200 text-yellow-800' :
+                                'bg-gray-200 text-gray-800'
+                            }">${priority}</span>
+                            <span class="ml-2 text-gray-700">${text}</span>
+                        </div>
+                        <p class="text-xs text-gray-500">${formatTimestamp(timestamp)}</p>
+                    </div>
+                    <button class="text-red-500 hover:text-red-700 ml-2 delete-note" data-timestamp="${timestamp}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm6 0a1 1 0 112 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            `;
+
+            newNoteTextEl.value = '';
+            newNotePriorityEl.value = 'Low';
+
+            // Update the in-memory trainee data to be saved later
+            currentTrainee.customNotes = JSON.stringify(notes);
+        });
 
 
         // Close Trainee Modal
@@ -981,6 +1135,7 @@
                     fitness: JSON.stringify(fitness),
                     counselingHistory: currentTrainee.counselingHistory,
                     trainingEvents: JSON.stringify(completedTrainingEvents),
+                    customNotes: currentTrainee.customNotes,
                     updatedAt: new Date()
                 }, { merge: true });
                 traineeModal.classList.add('hidden');
@@ -1101,7 +1256,8 @@
                             appointments: JSON.stringify([]),
                             fitness: JSON.stringify({ acftScore: '', runTime: '', rifleQual: '' }),
                             counselingHistory: JSON.stringify([]),
-                            trainingEvents: JSON.stringify([])
+                            trainingEvents: JSON.stringify([]),
+                            customNotes: JSON.stringify([])
                         };
                         await addDoc(traineesColRef, newTraineeData);
                     }
@@ -1168,4 +1324,3 @@
     </script>
 </body>
 </html>
-
