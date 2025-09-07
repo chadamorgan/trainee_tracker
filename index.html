@@ -6,16 +6,12 @@
     <title>Drill Sergeant Trainee Tracker</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Using Inter font from Google Fonts for a modern look */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6; /* A light gray background */
+            background-color: #f3f4f6;
             color: #1f2937;
             transition: overflow 0.3s ease;
         }
-        /* Lock body scroll when a modal is open */
         body.modal-open {
             overflow: hidden;
         }
@@ -28,34 +24,6 @@
         }
         .modal {
             transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-        }
-        /* Custom scrollbar for better aesthetics in modals */
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #555;
-        }
-        /* Simple spinner for loading states on buttons */
-        .spinner {
-            border: 2px solid #f3f3f3;
-            border-top: 2px solid #3498db;
-            border-radius: 50%;
-            width: 16px;
-            height: 16px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -100,7 +68,7 @@
         <div class="bg-gray-100 p-4 rounded-lg mb-6 shadow-inner">
             <h3 class="text-lg font-semibold text-gray-800">User Information</h3>
             <p id="authStatus" class="mt-1 text-sm text-gray-600">Loading...</p>
-            <p id="userIdDisplay" class="mt-1 text-sm text-gray-600 break-all"></p>
+            <p id="userIdDisplay" class="mt-1 text-sm text-gray-600"></p>
         </div>
 
         <!-- Platoon Dashboard -->
@@ -226,7 +194,7 @@
                 <h3 id="modalName" class="text-2xl font-bold text-gray-900"></h3>
                 <button id="closeModalBtn" class="text-gray-400 hover:text-gray-600 font-bold text-2xl">&times;</button>
             </div>
-            <div class="py-4 space-y-6 flex-1 overflow-y-auto min-h-0 custom-scrollbar">
+            <div class="py-4 space-y-6 flex-1 overflow-y-auto min-h-0">
                 
                 <!-- Accountability Status & Location -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -381,7 +349,7 @@
                 
             </div>
             <div class="flex justify-end space-x-2 pt-4 border-t flex-shrink-0">
-                <button id="updateTraineeBtn" class="px-4 py-2 text-sm font-semibold rounded-lg text-white bg-green-600 hover:bg-green-700 flex items-center justify-center min-w-[80px]">Update</button>
+                <button id="updateTraineeBtn" class="px-4 py-2 text-sm font-semibold rounded-lg text-white bg-green-600 hover:bg-green-700">Update</button>
                 <button id="deleteTraineeBtn" class="px-4 py-2 text-sm font-semibold rounded-lg text-white bg-red-600 hover:bg-red-700">Delete</button>
             </div>
         </div>
@@ -404,7 +372,7 @@
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl mx-auto p-6 md:p-8">
             <h3 class="text-2xl font-bold text-gray-900 mb-4 border-b pb-2">Daily Accountability Check-in</h3>
             <p class="text-gray-700 mb-6">Please update the status for today's sick call and appointments.</p>
-            <div id="dailyCheckInList" class="space-y-4 max-h-96 overflow-y-auto custom-scrollbar">
+            <div id="dailyCheckInList" class="space-y-4 max-h-96 overflow-y-auto">
                 <!-- Trainees for daily check-in will be injected here -->
             </div>
             <div class="flex justify-end space-x-2 pt-4 border-t mt-4">
@@ -427,7 +395,7 @@
             </div>
             <div class="flex justify-end pt-4 border-t">
                 <button id="bulkAddCancelBtn" class="px-4 py-2 text-sm font-semibold rounded-lg text-gray-700 bg-gray-200 hover:bg-gray-300">Cancel</button>
-                <button id="bulkAddSaveBtn" class="px-4 py-2 text-sm font-semibold rounded-lg text-white bg-blue-600 hover:bg-blue-700 flex items-center justify-center min-w-[120px]">Add Trainees</button>
+                <button id="bulkAddSaveBtn" class="px-4 py-2 text-sm font-semibold rounded-lg text-white bg-blue-600 hover:bg-blue-700">Add Trainees</button>
             </div>
         </div>
     </div>
@@ -439,7 +407,7 @@
                 <h3 class="text-2xl font-bold text-gray-900">Training Events</h3>
                 <button id="closeEventsModalBtn" class="text-gray-400 hover:text-gray-600 font-bold text-2xl">&times;</button>
             </div>
-            <div class="py-4 space-y-6 flex-1 overflow-y-auto min-h-0 custom-scrollbar">
+            <div class="py-4 space-y-6 flex-1 overflow-y-auto min-h-0">
                 
                 <!-- Section 1: Manage Events (Add/Delete) -->
                 <div class="space-y-2">
@@ -448,7 +416,7 @@
                         <input type="text" id="newTrainingEventName" placeholder="New Event Name" class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                         <button id="addTrainingEventBtn" class="px-4 py-2 text-sm font-semibold rounded-lg text-white bg-blue-600 hover:bg-blue-700 whitespace-nowrap">Add Event</button>
                     </div>
-                    <div id="trainingEventsManagementList" class="space-y-2 max-h-32 overflow-y-auto custom-scrollbar">
+                    <div id="trainingEventsManagementList" class="space-y-2 max-h-32 overflow-y-auto">
                         <!-- Events will be populated here -->
                     </div>
                 </div>
@@ -469,7 +437,7 @@
                         <input type="checkbox" id="selectAllTrainees" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
                         <label for="selectAllTrainees" class="ml-2 block text-sm font-medium text-gray-900">Select All Trainees</label>
                     </div>
-                    <div id="traineeEventUpdateList" class="space-y-2 max-h-48 overflow-y-auto mt-4 custom-scrollbar">
+                    <div id="traineeEventUpdateList" class="space-y-2 max-h-48 overflow-y-auto mt-4">
                         <!-- Trainees will be injected here for update -->
                     </div>
                 </div>
@@ -486,14 +454,14 @@
                             <option value="All">All Platoons</option>
                         </select>
                     </div>
-                    <div id="traineeEventViewList" class="space-y-2 max-h-48 overflow-y-auto mt-4 custom-scrollbar">
+                    <div id="traineeEventViewList" class="space-y-2 max-h-48 overflow-y-auto mt-4">
                         <!-- Trainees will be injected here for viewing status -->
                     </div>
                 </div>
 
             </div>
             <div class="flex justify-end pt-4 border-t flex-shrink-0">
-                <button id="updateTraineeEventsBtn" class="px-4 py-2 text-sm font-semibold rounded-lg text-white bg-green-600 hover:bg-green-700 flex items-center justify-center min-w-[200px]">Update Selected Trainees</button>
+                <button id="updateTraineeEventsBtn" class="px-4 py-2 text-sm font-semibold rounded-lg text-white bg-green-600 hover:bg-green-700">Update Selected Trainees</button>
             </div>
         </div>
     </div>
@@ -505,7 +473,7 @@
                 <h3 class="text-2xl font-bold text-gray-900">Platoon Tasks</h3>
                 <button id="closeManageTasksBtn" class="text-gray-400 hover:text-gray-600 font-bold text-2xl">&times;</button>
             </div>
-            <div class="py-4 space-y-4 flex-1 overflow-y-auto min-h-0 custom-scrollbar">
+            <div class="py-4 space-y-4 flex-1 overflow-y-auto min-h-0">
                 <div class="space-y-2">
                     <h4 class="text-lg font-bold text-gray-800">Add New Task</h4>
                     <div class="space-y-2">
@@ -529,19 +497,19 @@
                 </div>
                 <div class="space-y-2">
                     <h4 class="text-lg font-bold text-gray-800">Outstanding Tasks</h4>
-                    <div id="tasksManagementList" class="space-y-2 max-h-64 overflow-y-auto custom-scrollbar">
+                    <div id="tasksManagementList" class="space-y-2 max-h-64 overflow-y-auto">
                         <!-- Tasks will be populated here -->
                     </div>
                 </div>
                  <div class="space-y-2">
                     <h4 class="text-lg font-bold text-gray-800">Completed Tasks</h4>
-                    <div id="completedTasksList" class="space-y-2 max-h-64 overflow-y-auto custom-scrollbar">
+                    <div id="completedTasksList" class="space-y-2 max-h-64 overflow-y-auto">
                         <!-- Completed tasks will be populated here -->
                     </div>
                 </div>
             </div>
             <div class="flex justify-end pt-4 border-t flex-shrink-0">
-                <button id="closeTasksModal" class="px-4 py-2 text-sm font-semibold rounded-lg text-white bg-green-600 hover:bg-green-700">Done</button>
+                <button id="saveTasksBtn" class="px-4 py-2 text-sm font-semibold rounded-lg text-white bg-green-600 hover:bg-green-700">Done</button>
             </div>
         </div>
     </div>
@@ -551,33 +519,28 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, addDoc, setDoc, deleteDoc, onSnapshot, collection, query, getDoc, getDocs, Timestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, addDoc, setDoc, deleteDoc, onSnapshot, collection, query, getDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
         // Firestore debugging
         setLogLevel('debug');
 
-        // --- GLOBAL VARIABLES & CONSTANTS ---
-        // These variables are provided by the environment and are crucial for Firebase integration.
-        // A fallback configuration is provided for local development to prevent the app from crashing if environment variables aren't set.
-        // NOTE: The app will display data-loading errors when using this default config as it does not point to a real database.
-        const firebaseConfig = typeof __firebase_config !== 'undefined' 
-            ? JSON.parse(__firebase_config) 
-            : {
-                apiKey: "dummy-key",
-                authDomain: "dummy-project.firebaseapp.com",
-                projectId: "dummy-project",
-                storageBucket: "dummy-project.appspot.com",
-                messagingSenderId: "1234567890",
-                appId: "1:1234567890:web:dummy-app-id"
-            };
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCoXUDjmqNNCkGL2NyQfHolHJk-kUXQnxI",
+            authDomain: "trainee-tracker-dfdbf.firebaseapp.com",
+            projectId: "trainee-tracker-dfdbf",
+            storageBucket: "trainee-tracker-dfdbf.firebasestorage.app",
+            messagingSenderId: "204041263094",
+            appId: "1:204041263094:web:9fbdc155c2bec6ce76d9d7",
+            measurementId: "G-NWT2N93JY7"
+        };
+        
+        const traineeAppId = "trainee-tracker-dfdbf";
 
         let db, auth, userId, traineesData = [], globalTrainingEvents = [], platoonTasks = [];
-        let unsubscribeTrainees, unsubscribeEvents, unsubscribeTasks; // To manage listeners
 
-        // --- UI ELEMENT SELECTORS ---
+        // UI Elements
         const authStatusEl = document.getElementById('authStatus');
         const userIdDisplayEl = document.getElementById('userIdDisplay');
         const availableCountEl = document.getElementById('availableCount');
@@ -660,6 +623,7 @@
         const viewPlatoonSelectorEl = document.getElementById('viewPlatoonSelector');
         const traineeEventViewListEl = document.getElementById('traineeEventViewList');
 
+
         const traineeSearchEl = document.getElementById('traineeSearch');
         const platoonFilterEl = document.getElementById('platoonFilter');
 
@@ -677,7 +641,6 @@
         const openTasksModalBtn = document.getElementById('openTasksModal');
         const manageTasksModal = document.getElementById('manageTasksModal');
         const closeManageTasksBtn = document.getElementById('closeManageTasksBtn');
-        const closeTasksModalBtn = document.getElementById('closeTasksModal');
         const newTaskTextEl = document.getElementById('newTaskText');
         const newTaskPriorityEl = document.getElementById('newTaskPriority');
         const newTaskDueDateEl = document.getElementById('newTaskDueDate');
@@ -689,20 +652,75 @@
         let currentEditingTraineeId = null;
         let platoons = new Set();
         let currentStatusFilter = 'All';
-        let currentPlatoonFilter = 'All';
+        
+        const allPlatoonSelectors = [
+            dashboardPlatoonFilterEl,
+            platoonFilterEl,
+            updatePlatoonSelectorEl,
+            viewPlatoonSelectorEl
+        ];
+        
+        // Link all platoon filter dropdowns
+        const linkPlatoonFilters = (selectedValue) => {
+            allPlatoonSelectors.forEach(selectEl => {
+                selectEl.value = selectedValue;
+            });
+            updateAvailableTraineeCount(selectedValue);
+            renderTraineeList();
+            renderTraineeEventUpdateList();
+            renderTraineeEventViewList();
+        };
 
-        // --- HELPER FUNCTIONS ---
+        allPlatoonSelectors.forEach(selectEl => {
+            selectEl.addEventListener('change', (e) => {
+                linkPlatoonFilters(e.target.value);
+            });
+        });
 
-        const setButtonLoading = (button, isLoading) => {
-            if (isLoading) {
-                button.disabled = true;
-                button.innerHTML = `<div class="spinner mx-auto"></div>`;
+        // Event listeners for dashboard cards
+        dashboardCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const filter = card.dataset.filter;
+                currentStatusFilter = filter;
+                traineeSearchEl.value = ''; // Reset search bar
+                linkPlatoonFilters('All'); // Reset platoon filter
+                updateRosterHeader(filter);
+            });
+        });
+
+        const updateRosterHeader = (filter) => {
+            if (filter === 'All') {
+                rosterHeaderEl.textContent = 'Trainee Roster';
+            } else if (filter === 'Profile') {
+                rosterHeaderEl.textContent = 'Trainees on Profile';
+            } else if (filter === 'Unqualified') {
+                 rosterHeaderEl.textContent = 'Unqualified Trainees';
+            } else if (filter === 'ACFT Fail') {
+                rosterHeaderEl.textContent = 'ACFT Failures';
+            } else if (filter === 'Male' || filter === 'Female' || filter === 'Other') {
+                rosterHeaderEl.textContent = `${filter} Trainees`;
             } else {
-                button.disabled = false;
-                button.innerHTML = button.dataset.originalText || 'Submit';
+                rosterHeaderEl.textContent = `Trainees with Status: ${filter}`;
             }
         };
 
+        const updateAvailableTraineeCount = (platoon) => {
+            let filteredTrainees = traineesData;
+            if (platoon !== 'All') {
+                filteredTrainees = traineesData.filter(trainee => trainee.platoon === platoon);
+            }
+            const totalCount = filteredTrainees.length;
+            const availableCount = filteredTrainees.filter(trainee => trainee.status === 'Present').length;
+            const maleCount = filteredTrainees.filter(trainee => trainee.gender === 'Male').length;
+            const femaleCount = filteredTrainees.filter(trainee => trainee.gender === 'Female').length;
+
+            availableCountEl.textContent = `${availableCount} / ${totalCount} Trainees Available`;
+            rosterCountEl.textContent = traineesData.length;
+            maleCountEl.textContent = maleCount;
+            femaleCountEl.textContent = femaleCount;
+        };
+
+        // Function to convert Firestore timestamp or ISO string to a readable string
         const formatDate = (date) => {
             if (!date) return 'N/A';
             let d = date;
@@ -711,8 +729,6 @@
             } else if (date && typeof date.toDate === 'function') {
                 d = date.toDate();
             }
-            // Add one day to correct for timezone issues with date inputs
-            d.setDate(d.getDate() + 1);
             return d.toLocaleDateString();
         };
 
@@ -720,13 +736,10 @@
             if (timestamp && typeof timestamp.toDate === 'function') {
                 return timestamp.toDate().toLocaleString();
             }
-            // Handle ISO string format
-            if (typeof timestamp === 'string') {
-                return new Date(timestamp).toLocaleString();
-            }
             return new Date().toLocaleString();
         };
 
+        // Custom confirmation modal logic
         const showConfirmation = (title, message, onConfirm) => {
             confirmTitleEl.textContent = title;
             confirmMessageEl.textContent = message;
@@ -735,182 +748,25 @@
 
             const handleProceed = () => {
                 onConfirm();
-                closeConfirmation();
+                confirmModal.classList.add('hidden');
+                document.body.classList.remove('modal-open');
+                confirmProceedBtn.removeEventListener('click', handleProceed);
+                confirmCancelBtn.removeEventListener('click', handleCancel);
             };
 
-            const closeConfirmation = () => {
-                 confirmModal.classList.add('hidden');
-                 document.body.classList.remove('modal-open');
-                 confirmProceedBtn.removeEventListener('click', handleProceed);
-                 confirmCancelBtn.removeEventListener('click', closeConfirmation);
-            }
-            
+            const handleCancel = () => {
+                confirmModal.classList.add('hidden');
+                document.body.classList.remove('modal-open');
+                confirmProceedBtn.removeEventListener('click', handleProceed);
+                confirmCancelBtn.removeEventListener('click', handleCancel);
+            };
+
             confirmProceedBtn.addEventListener('click', handleProceed);
-            confirmCancelBtn.addEventListener('click', closeConfirmation);
+            confirmCancelBtn.addEventListener('click', handleCancel);
         };
         
-        // --- FIREBASE & AUTH INITIALIZATION ---
-        window.onload = function() {
-            try {
-                const app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-                
-                onAuthStateChanged(auth, async (user) => {
-                    if (user) {
-                        // This block runs when authentication is successful (either initially or after sign-in).
-                        userId = user.uid;
-                        authStatusEl.textContent = 'Status: Authenticated';
-                        userIdDisplayEl.textContent = `User ID: ${userId}`;
-                        errorMessageEl.classList.add('hidden');
-                        loadingStatusEl.textContent = 'Loading trainees...';
-                        setupRealtimeListeners();
-                    } else {
-                        // This block runs on initial load before sign-in attempt.
-                        try {
-                            if (initialAuthToken) {
-                                await signInWithCustomToken(auth, initialAuthToken);
-                            } else {
-                                await signInAnonymously(auth);
-                            }
-                            // After successful sign-in, onAuthStateChanged will be re-triggered, and the `if (user)` block will run.
-                        } catch (error) {
-                            // This block runs ONLY if BOTH custom token AND anonymous sign-in fail.
-                            console.error("Firebase Authentication Failed:", error);
-                            authStatusEl.textContent = 'Status: Authentication Failed';
-                            userIdDisplayEl.textContent = 'Could not connect to the service. Please check your connection and refresh.';
-                            loadingStatusEl.style.display = 'none';
-                            errorMessageEl.textContent = 'Application cannot start without a valid user session.';
-                            errorMessageEl.classList.remove('hidden');
-                            // DO NOT call setupRealtimeListeners() here, as there's no authenticated user.
-                        }
-                    }
-                });
-
-            } catch (error) {
-                console.error("Firebase initialization failed:", error);
-                authStatusEl.textContent = 'Status: Error';
-                userIdDisplayEl.textContent = 'Could not initialize Firebase.';
-                loadingStatusEl.textContent = 'App initialization failed. Check console for details.';
-            }
-        };
-
-        // --- REAL-TIME LISTENERS ---
-        const setupRealtimeListeners = () => {
-             // Detach old listeners if they exist to prevent memory leaks
-            if (unsubscribeTrainees) unsubscribeTrainees();
-            if (unsubscribeEvents) unsubscribeEvents();
-            if (unsubscribeTasks) unsubscribeTasks();
-            
-            const traineesColRef = collection(db, `artifacts/${appId}/users/${userId}/trainees`);
-            const qTrainees = query(traineesColRef);
-            const eventsColRef = collection(db, `artifacts/${appId}/users/${userId}/training_events`);
-            const qEvents = query(eventsColRef);
-            const tasksColRef = collection(db, `artifacts/${appId}/users/${userId}/tasks`);
-            const qTasks = query(tasksColRef);
-        
-            unsubscribeEvents = onSnapshot(qEvents, (snapshot) => {
-                globalTrainingEvents = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                totalEventsCount.textContent = globalTrainingEvents.length;
-                populateTrainingEventSelectors();
-            }, (error) => {
-                console.error("Error fetching global training events:", error);
-                errorMessageEl.classList.remove('hidden');
-                loadingStatusEl.classList.add('hidden');
-            });
-        
-            unsubscribeTrainees = onSnapshot(qTrainees, (snapshot) => {
-                loadingStatusEl.style.display = 'none';
-                errorMessageEl.classList.add('hidden');
-                traineesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                platoons.clear();
-                traineesData.forEach(trainee => platoons.add(trainee.platoon));
-                
-                updateDashboardCounts();
-                populatePlatoonFilters();
-                renderTraineeList();
-                checkForUpcomingAppointments();
-                updateDashboardNotesAndTasks();
-                performDailyCheckIn();
-            }, (error) => {
-                console.error("Error fetching trainees:", error);
-                loadingStatusEl.style.display = 'none';
-                errorMessageEl.classList.remove('hidden');
-                traineeList.innerHTML = '';
-            });
-
-            unsubscribeTasks = onSnapshot(qTasks, (snapshot) => {
-                platoonTasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                updateDashboardTasks();
-                renderTasksManagementList();
-                updateDashboardNotesAndTasks();
-            }, (error) => {
-                console.error("Error fetching platoon tasks:", error);
-            });
-        };
-
-        // --- DASHBOARD & UI UPDATES ---
-        const updateDashboardCounts = () => {
-            const statusCounts = { 'Present': 0, 'Sick Call': 0, 'On Leave': 0, 'Absent': 0, 'Other': 0 };
-            let profileCount = 0;
-            let unqualifiedCount = 0;
-            let acftFailCount = 0;
-            let maleCount = 0;
-            let femaleCount = 0;
-
-            traineesData.forEach(trainee => {
-                statusCounts[trainee.status in statusCounts ? trainee.status : 'Other']++;
-                if (trainee.profile?.restriction) profileCount++;
-                if (trainee.fitness?.rifleQual === 'Fail') unqualifiedCount++;
-                if (trainee.fitness?.acftScore === 'Fail') acftFailCount++;
-                if (trainee.gender === 'Male') maleCount++;
-                else if (trainee.gender === 'Female') femaleCount++;
-            });
-
-            rosterCountEl.textContent = traineesData.length;
-            presentCountEl.textContent = statusCounts['Present'];
-            sickCallCountEl.textContent = statusCounts['Sick Call'];
-            profileCountEl.textContent = profileCount;
-            unqualifiedCountEl.textContent = unqualifiedCount;
-            acftFailCountEl.textContent = acftFailCount;
-            maleCountEl.textContent = maleCount;
-            femaleCountEl.textContent = femaleCount;
-
-            updateAvailableTraineeCount(dashboardPlatoonFilterEl.value);
-        }
-
-        dashboardCards.forEach(card => {
-            card.addEventListener('click', () => {
-                const filter = card.dataset.filter;
-                currentStatusFilter = filter;
-                traineeSearchEl.value = ''; // Reset search bar
-                handlePlatoonFilterChange('All'); // This resets platoon filters and re-renders the list
-                updateRosterHeader(filter); // This updates the header text
-            });
-        });
-
-        const updateRosterHeader = (filter) => {
-            const filterMap = {
-                'All': 'Trainee Roster',
-                'Profile': 'Trainees on Profile',
-                'Unqualified': 'Unqualified Trainees',
-                'ACFT Fail': 'ACFT Failures',
-                'Male': 'Male Trainees',
-                'Female': 'Female Trainees',
-                'Other': 'Other Gender Trainees',
-            };
-            rosterHeaderEl.textContent = filterMap[filter] || `Trainees with Status: ${filter}`;
-        };
-
-        const updateAvailableTraineeCount = (platoon) => {
-            let filteredTrainees = platoon === 'All' ? traineesData : traineesData.filter(t => t.platoon === platoon);
-            const totalCount = filteredTrainees.length;
-            const availableCount = filteredTrainees.filter(t => t.status === 'Present').length;
-            
-            availableCountEl.textContent = `${availableCount} / ${totalCount} Trainees Available`;
-        };
-
-        const checkForUpcomingAppointments = () => {
+        // Check for upcoming appointments
+        const checkForUpcomingAppointments = (trainees) => {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
             const tenDaysFromNow = new Date(today);
@@ -918,8 +774,9 @@
             
             const upcoming = [];
             
-            traineesData.forEach(trainee => {
-                (trainee.appointments || []).forEach(app => {
+            trainees.forEach(trainee => {
+                const appointments = JSON.parse(trainee.appointments || '[]');
+                appointments.forEach(app => {
                     const appDate = new Date(app.date);
                     if (appDate >= today && appDate <= tenDaysFromNow) {
                         const daysLeft = Math.ceil((appDate - today) / (1000 * 60 * 60 * 24));
@@ -931,7 +788,7 @@
             if (upcoming.length > 0) {
                 const message = upcoming.map(item => {
                     const daysText = item.daysLeft === 0 ? 'today' : `${item.daysLeft} day${item.daysLeft === 1 ? '' : 's'}`;
-                    return `${item.name}: ${item.description} (${daysText})`;
+                    return `${item.name}: ${item.description} (${daysText} left)`;
                 }).join('; ');
                 
                 notificationMessageEl.textContent = `Upcoming Appointments: ${message}.`;
@@ -940,72 +797,347 @@
                 notificationBanner.classList.add('hidden');
             }
 
+            // Update upcoming appointments list in dashboard
             upcomingAppointmentsListEl.innerHTML = '';
             if (upcoming.length > 0) {
                 upcoming.forEach(app => {
-                    const li = document.createElement('li');
-                    li.textContent = `${app.name}: ${app.description}`;
-                    upcomingAppointmentsListEl.appendChild(li);
+                    const listItem = document.createElement('li');
+                    listItem.textContent = `${app.name}: ${app.description}`;
+                    upcomingAppointmentsListEl.appendChild(listItem);
                 });
             } else {
-                upcomingAppointmentsListEl.innerHTML = '<li>No upcoming appointments in the next 10 days.</li>';
+                const listItem = document.createElement('li');
+                listItem.textContent = 'No upcoming appointments in the next 10 days.';
+                upcomingAppointmentsListEl.appendChild(listItem);
             }
         };
 
-        const updateDashboardNotesAndTasks = () => {
-            const priorityOrder = { 'High': 1, 'Medium': 2, 'Low': 3 };
-            const allItems = [];
-            const today = new Date();
+        const priorityOrder = { 'High': 1, 'Medium': 2, 'Low': 3 };
 
+        const updateDashboardNotesAndTasks = () => {
+            const allItems = [];
+
+            // Add custom notes
             traineesData.forEach(trainee => {
-                (trainee.customNotes || []).forEach(note => allItems.push({
-                    type: 'Note', name: trainee.name, priority: note.priority, text: note.text, timestamp: note.timestamp
-                }));
+                try {
+                    const customNotes = JSON.parse(trainee.customNotes || '[]');
+                    customNotes.forEach(note => allItems.push({ 
+                        type: 'Note', 
+                        name: trainee.name, 
+                        priority: note.priority, 
+                        text: note.text, 
+                        timestamp: note.timestamp,
+                        id: note.timestamp
+                    }));
+                } catch(e) {
+                    console.error("Failed to parse notes for dashboard:", e);
+                }
             });
 
+            // Add platoon tasks and dynamically update priority
+            const today = new Date();
             platoonTasks.forEach(task => {
                 if (!task.completed) {
                     let taskPriority = task.priority;
                     if (task.dueDate) {
                         const dueDate = new Date(task.dueDate);
-                        const diffDays = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
-                        if (diffDays <= 3) taskPriority = 'High';
-                        else if (diffDays <= 7) taskPriority = 'Medium';
+                        const diffTime = dueDate.getTime() - today.getTime();
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                        
+                        if (diffDays <= 3) {
+                            taskPriority = 'High';
+                        } else if (diffDays <= 7) {
+                            taskPriority = 'Medium';
+                        }
                     }
-                    allItems.push({ type: 'Task', id: task.id, priority: taskPriority, text: task.text, dueDate: task.dueDate });
+                    allItems.push({ 
+                        type: 'Task', 
+                        id: task.id, 
+                        priority: taskPriority, 
+                        text: task.text, 
+                        dueDate: task.dueDate 
+                    });
                 }
             });
 
+            // Sort all items
             allItems.sort((a, b) => {
                 const priorityA = priorityOrder[a.priority];
                 const priorityB = priorityOrder[b.priority];
-                if (priorityA !== priorityB) return priorityA - priorityB;
+
+                if (priorityA !== priorityB) {
+                    return priorityA - priorityB;
+                }
                 
-                const dateA = a.dueDate ? new Date(a.dueDate).getTime() : (a.timestamp ? a.timestamp.toMillis() : Infinity);
-                const dateB = b.dueDate ? new Date(b.dueDate).getTime() : (b.timestamp ? b.timestamp.toMillis() : Infinity);
+                // If priorities are equal, sort by due date (for tasks) or timestamp (for notes)
+                const dateA = a.dueDate ? new Date(a.dueDate).getTime() : (a.timestamp ? new Date(a.timestamp).getTime() : Infinity);
+                const dateB = b.dueDate ? new Date(b.dueDate).getTime() : (b.timestamp ? new Date(b.timestamp).getTime() : Infinity);
+                
                 return dateA - dateB;
             });
 
-            priorityListEl.innerHTML = allItems.map(item => {
-                const isTask = item.type === 'Task';
-                const dueDateText = isTask && item.dueDate ? ` (Due: ${formatDate(item.dueDate)})` : '';
-                const priorityClass = {
-                    'High': 'bg-red-200 text-red-800',
-                    'Medium': 'bg-yellow-200 text-yellow-800',
-                    'Low': 'bg-gray-200 text-gray-800'
-                }[item.priority];
-                return `<li>
-                    <span class="px-2 py-0.5 text-xs font-semibold rounded-full ${priorityClass}">${item.priority}</span>
-                    <span class="ml-2">${isTask ? 'TASK' : item.name}: ${item.text}${dueDateText}</span>
-                </li>`;
-            }).join('') || '<li>No priority items at this time.</li>';
+            priorityListEl.innerHTML = '';
+            if (allItems.length > 0) {
+                allItems.forEach(item => {
+                    const listItem = document.createElement('li');
+                    const isTask = item.type === 'Task';
+                    const dueDateText = isTask && item.dueDate ? ` (Due: ${formatDate(item.dueDate)})` : '';
+                    listItem.innerHTML = `
+                        <span class="px-2 py-0.5 text-xs font-semibold rounded-full ${
+                            item.priority === 'High' ? 'bg-red-200 text-red-800' :
+                            item.priority === 'Medium' ? 'bg-yellow-200 text-yellow-800' :
+                            'bg-gray-200 text-gray-800'
+                        }">${item.priority}</span>
+                        <span class="ml-2">${isTask ? 'TASK' : item.name}: ${item.text}${dueDateText}</span>
+                    `;
+                    priorityListEl.appendChild(listItem);
+                });
+            } else {
+                const listItem = document.createElement('li');
+                listItem.textContent = 'No priority items at this time.';
+                priorityListEl.appendChild(listItem);
+            }
         };
 
 
-        // --- MAIN TRAINEE LIST RENDERING ---
+        // Check for daily check-in
+        const performDailyCheckIn = async () => {
+            const userDocRef = doc(db, `artifacts/${traineeAppId}/users/${userId}/_metadata/app`);
+            const userDocSnap = await getDoc(userDocRef);
+            const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+            
+            if (userDocSnap.exists() && userDocSnap.data().lastDailyCheckIn === today) {
+                // Check-in already done for today, do nothing.
+                return;
+            }
+
+            // Show daily check-in modal
+            dailyCheckInListEl.innerHTML = '';
+            traineesData.forEach(trainee => {
+                const checkInItem = document.createElement('div');
+                checkInItem.className = 'flex items-center space-x-4 p-2 bg-gray-50 rounded-lg';
+                checkInItem.innerHTML = `
+                    <div class="flex-1 font-semibold">${trainee.name}</div>
+                    <select class="status-select rounded-md border-gray-300 shadow-sm" data-id="${trainee.id}">
+                        <option value="Present" ${trainee.status === 'Present' ? 'selected' : ''}>Present</option>
+                        <option value="Sick Call" ${trainee.status === 'Sick Call' ? 'selected' : ''}>Sick Call</option>
+                        <option value="On Leave" ${trainee.status === 'On Leave' ? 'selected' : ''}>On Leave</option>
+                        <option value="Absent" ${trainee.status === 'Absent' ? 'selected' : ''}>Absent</option>
+                        <option value="Other" ${trainee.status === 'Other' ? 'selected' : ''}>Other</option>
+                    </select>
+                `;
+                dailyCheckInListEl.appendChild(checkInItem);
+            });
+
+            dailyCheckInModal.classList.remove('hidden');
+        };
+
+        // Initialize Firebase and Authentication
+        window.onload = function() {
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        authStatusEl.textContent = 'Status: Authenticated';
+                        userIdDisplayEl.textContent = `User ID: ${userId}`;
+                        setupRealtimeListeners();
+                    } else {
+                        try {
+                           const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+                            if (initialAuthToken) {
+                                await signInWithCustomToken(auth, initialAuthToken);
+                            } else {
+                                await signInAnonymously(auth);
+                            }
+                        } catch (error) {
+                            console.error("Authentication failed:", error);
+                            authStatusEl.textContent = 'Status: Not Authenticated';
+                            userIdDisplayEl.textContent = 'Error during sign-in.';
+                            userId = crypto.randomUUID();
+                            userIdDisplayEl.textContent = `Using temporary ID: ${userId}`;
+                            setupRealtimeListeners();
+                        }
+                    }
+                });
+
+            } catch (error) {
+                console.error("Firebase initialization failed:", error);
+                authStatusEl.textContent = 'Status: Error';
+                userIdDisplayEl.textContent = 'Could not initialize Firebase.';
+            }
+        };
+
+        // Set up real-time listeners for all data
+        const setupRealtimeListeners = () => {
+            const traineesColRef = collection(db, `artifacts/${traineeAppId}/users/${userId}/trainees`);
+            const qTrainees = query(traineesColRef);
+            const eventsColRef = collection(db, `artifacts/${traineeAppId}/users/${userId}/training_events`);
+            const qEvents = query(eventsColRef);
+            const tasksColRef = collection(db, `artifacts/${traineeAppId}/users/${userId}/tasks`);
+            const qTasks = query(tasksColRef);
+        
+            onSnapshot(qEvents, (snapshot) => {
+                globalTrainingEvents = [];
+                snapshot.forEach(doc => {
+                    globalTrainingEvents.push({ id: doc.id, ...doc.data() });
+                });
+                totalEventsCount.textContent = globalTrainingEvents.length;
+                populateTrainingEventSelectors();
+            }, (error) => {
+                console.error("Error fetching global training events:", error);
+                errorMessageEl.classList.remove('hidden');
+                loadingStatusEl.classList.add('hidden');
+            });
+        
+            onSnapshot(qTrainees, (snapshot) => {
+                loadingStatusEl.style.display = 'none';
+                errorMessageEl.classList.add('hidden');
+                traineesData = [];
+                platoons.clear();
+                const statusCounts = { 'Present': 0, 'Sick Call': 0, 'On Leave': 0, 'Absent': 0, 'Other': 0 };
+                let profileCount = 0;
+                let unqualifiedCount = 0;
+                let acftFailCount = 0;
+                let maleCount = 0;
+                let femaleCount = 0;
+                let otherGenderCount = 0;
+
+                if (snapshot.empty) {
+                    traineeList.innerHTML = '<p class="text-center text-gray-500">No trainees added yet.</p>';
+                } else {
+                    snapshot.forEach(doc => {
+                        const trainee = { id: doc.id, ...doc.data() };
+                        traineesData.push(trainee);
+                        platoons.add(trainee.platoon);
+                        
+                        // Update dashboard counts
+                        if (statusCounts.hasOwnProperty(trainee.status)) {
+                             statusCounts[trainee.status]++;
+                        } else {
+                            statusCounts['Other']++;
+                        }
+                        
+                        const profile = JSON.parse(trainee.profile || '{}');
+                        if (profile.restriction) {
+                            profileCount++;
+                        }
+                        const fitness = JSON.parse(trainee.fitness || '{}');
+                        if (fitness.rifleQual === 'Fail') {
+                            unqualifiedCount++;
+                        }
+                        if (fitness.acftScore === 'Fail') {
+                            acftFailCount++;
+                        }
+
+                        if (trainee.gender === 'Male') maleCount++;
+                        else if (trainee.gender === 'Female') femaleCount++;
+                        else otherGenderCount++;
+                    });
+                }
+
+                rosterCountEl.textContent = traineesData.length;
+                presentCountEl.textContent = statusCounts['Present'];
+                sickCallCountEl.textContent = statusCounts['Sick Call'];
+                profileCountEl.textContent = profileCount;
+                unqualifiedCountEl.textContent = unqualifiedCount;
+                acftFailCountEl.textContent = acftFailCount;
+                maleCountEl.textContent = maleCount;
+                femaleCountEl.textContent = femaleCount;
+
+                populatePlatoonFilters();
+                updateAvailableTraineeCount(dashboardPlatoonFilterEl.value);
+                renderTraineeList();
+                checkForUpcomingAppointments(traineesData);
+                updateDashboardNotesAndTasks();
+                performDailyCheckIn();
+            }, (error) => {
+                console.error("Error fetching trainees:", error);
+                loadingStatusEl.style.display = 'none';
+                errorMessageEl.classList.remove('hidden');
+                traineeList.innerHTML = '';
+            });
+
+            onSnapshot(qTasks, (snapshot) => {
+                platoonTasks = [];
+                snapshot.forEach(doc => {
+                    platoonTasks.push({ id: doc.id, ...doc.data() });
+                });
+                updateDashboardTasks();
+                renderTasksManagementList();
+                updateDashboardNotesAndTasks();
+            }, (error) => {
+                console.error("Error fetching platoon tasks:", error);
+            });
+        };
+
+        const populatePlatoonFilters = () => {
+            const sortedPlatoons = Array.from(platoons).sort();
+            
+            // Populate main roster filter
+            const currentMainFilter = platoonFilterEl.value;
+            platoonFilterEl.innerHTML = '<option value="All">All Platoons</option>';
+            sortedPlatoons.forEach(platoon => {
+                const option = document.createElement('option');
+                option.value = platoon;
+                option.textContent = platoon;
+                platoonFilterEl.appendChild(option);
+            });
+            platoonFilterEl.value = currentMainFilter;
+            
+            // Populate dashboard filter
+            const currentDashboardFilter = dashboardPlatoonFilterEl.value;
+            dashboardPlatoonFilterEl.innerHTML = '<option value="All">All Platoons</option>';
+            sortedPlatoons.forEach(platoon => {
+                const option = document.createElement('option');
+                option.value = platoon;
+                option.textContent = platoon;
+                dashboardPlatoonFilterEl.appendChild(option);
+            });
+            dashboardPlatoonFilterEl.value = currentDashboardFilter;
+
+            // Populate update training platoon filter
+            const currentUpdateFilter = updatePlatoonSelectorEl.value;
+            updatePlatoonSelectorEl.innerHTML = '<option value="All">Entire Company Roster</option>';
+             if (sortedPlatoons.length > 0) {
+                 sortedPlatoons.forEach(platoon => {
+                    const option = document.createElement('option');
+                    option.value = platoon;
+                    option.textContent = platoon;
+                    updatePlatoonSelectorEl.appendChild(option);
+                 });
+                 // Select the first platoon by default
+                 if (currentUpdateFilter === 'All') {
+                    updatePlatoonSelectorEl.value = sortedPlatoons[0];
+                 } else {
+                    updatePlatoonSelectorEl.value = currentUpdateFilter;
+                 }
+            }
+            
+            // Populate view training platoon filter
+            const currentViewFilter = viewPlatoonSelectorEl.value;
+            viewPlatoonSelectorEl.innerHTML = '<option value="All">All Platoons</option>';
+            sortedPlatoons.forEach(platoon => {
+                const option = document.createElement('option');
+                option.value = platoon;
+                option.textContent = platoon;
+                viewPlatoonSelectorEl.appendChild(option);
+            });
+            viewPlatoonSelectorEl.value = currentViewFilter;
+        };
+
+        const populateTrainingEventSelectors = () => {
+            const trainingEventOptions = globalTrainingEvents.map(event => `<option value="${event.id}">${event.name}</option>`).join('');
+            updateEventSelectorEl.innerHTML = '<option value="">Select an Event</option>' + trainingEventOptions;
+            viewEventSelectorEl.innerHTML = '<option value="">Select an Event</option>' + trainingEventOptions;
+        };
+
         const renderTraineeList = () => {
             const searchTerm = traineeSearchEl.value.toLowerCase();
-            const selectedPlatoon = currentPlatoonFilter;
+            const selectedPlatoon = platoonFilterEl.value;
 
             let filteredTrainees = traineesData.filter(trainee => {
                 const nameMatch = trainee.name.toLowerCase().includes(searchTerm);
@@ -1013,51 +1145,96 @@
                 
                 let statusMatch = true;
                 if (currentStatusFilter !== 'All') {
-                    if (currentStatusFilter === 'Profile') statusMatch = !!trainee.profile?.restriction;
-                    else if (currentStatusFilter === 'Unqualified') statusMatch = trainee.fitness?.rifleQual === 'Fail';
-                    else if (currentStatusFilter === 'ACFT Fail') statusMatch = trainee.fitness?.acftScore === 'Fail';
-                    else if (['Male', 'Female', 'Other'].includes(currentStatusFilter)) statusMatch = trainee.gender === currentStatusFilter;
-                    else statusMatch = trainee.status === currentStatusFilter;
+                    if (currentStatusFilter === 'Profile') {
+                        const profile = JSON.parse(trainee.profile || '{}');
+                        statusMatch = !!profile.restriction;
+                    } else if (currentStatusFilter === 'Unqualified') {
+                        const fitness = JSON.parse(trainee.fitness || '{}');
+                        statusMatch = fitness.rifleQual === 'Fail';
+                    } else if (currentStatusFilter === 'ACFT Fail') {
+                        const fitness = JSON.parse(trainee.fitness || '{}');
+                        statusMatch = fitness.acftScore === 'Fail';
+                    } else if (currentStatusFilter === 'Male' || currentStatusFilter === 'Female' || currentStatusFilter === 'Other') {
+                        statusMatch = trainee.gender === currentStatusFilter;
+                    } else {
+                        statusMatch = trainee.status === currentStatusFilter;
+                    }
                 }
                 return nameMatch && platoonMatch && statusMatch;
             });
             
-            filteredTrainees.sort((a, b) => a.platoon.localeCompare(b.platoon) || a.name.localeCompare(b.name));
+            // Sort by platoon, then by name
+            filteredTrainees.sort((a, b) => {
+                if (a.platoon !== b.platoon) {
+                    return a.platoon.localeCompare(b.platoon);
+                }
+                return a.name.localeCompare(b.name);
+            });
 
             traineeList.innerHTML = '';
             if (filteredTrainees.length === 0) {
                 traineeList.innerHTML = '<p class="text-center text-gray-500">No matching trainees found.</p>';
             } else {
-                filteredTrainees.forEach(trainee => traineeList.appendChild(createTraineeCard(trainee)));
+                filteredTrainees.forEach(trainee => {
+                    const traineeCard = createTraineeCard(trainee);
+                    traineeList.appendChild(traineeCard);
+                });
             }
         };
+        
+        traineeSearchEl.addEventListener('input', () => {
+            currentStatusFilter = 'All'; // Reset dashboard filter when searching
+            updateRosterHeader('All');
+            renderTraineeList();
+        });
+        
+        platoonFilterEl.addEventListener('change', () => {
+            currentStatusFilter = 'All'; // Reset dashboard filter when changing platoon
+            updateRosterHeader('All');
+            renderTraineeList();
+        });
 
+        // Create a trainee card element
         const createTraineeCard = (trainee) => {
             const card = document.createElement('div');
             card.className = 'bg-gray-50 p-4 rounded-lg shadow-sm cursor-pointer hover:bg-gray-100 transition-colors';
             card.dataset.id = trainee.id;
 
-            const { profile = {}, fitness = {}, appointments = [], history = [], customNotes = [] } = trainee;
-            const sickCallCount = (history || []).filter(item => item.details.includes('to \'Sick Call\'')).length;
-            const hasUpcomingAppointment = (appointments || []).some(app => new Date(app.date) >= new Date());
-            const hasTaggedNote = (customNotes || []).some(note => note.text.toLowerCase().includes(`@${trainee.name.toLowerCase()}`));
+            // Gather all the necessary data
+            let profileData = {};
+            try { profileData = JSON.parse(trainee.profile || '{}'); } catch(e) { console.error("Failed to parse profile data for card:", e); }
+            
+            let fitnessData = {};
+            try { fitnessData = JSON.parse(trainee.fitness || '{}'); } catch(e) { console.error("Failed to parse fitness data for card:", e); }
+            
+            let appointments = [];
+            try { appointments = JSON.parse(trainee.appointments || '[]'); } catch(e) { console.error("Failed to parse appointments for card:", e); }
+            
+            let history = [];
+            try { history = JSON.parse(trainee.history || '[]'); } catch(e) { console.error("Failed to parse history for card:", e); }
+            
+            let customNotes = [];
+            try { customNotes = JSON.parse(trainee.customNotes || '[]'); } catch(e) { console.error("Failed to parse custom notes for card:", e); }
 
-            const statusClass = {
-                'Present': 'bg-green-100 text-green-800',
-                'Sick Call': 'bg-yellow-100 text-yellow-800',
-                'On Leave': 'bg-blue-100 text-blue-800',
-            }[trainee.status] || 'bg-red-100 text-red-800';
+            const sickCallCount = history.filter(item => item.details.includes('to \'Sick Call\'')).length;
+            const hasUpcomingAppointment = appointments.some(app => new Date(app.date) >= new Date());
+            const hasTaggedNote = customNotes.some(note => note.text.toLowerCase().includes(`@${trainee.name.toLowerCase()}`));
 
             card.innerHTML = `
                 <div class="flex items-center justify-between mb-2">
                     <h4 class="text-xl font-semibold text-gray-900">${trainee.rank || ''} ${trainee.name}</h4>
-                    <span class="px-3 py-1 text-sm font-medium rounded-full ${statusClass}">${trainee.status}</span>
+                    <span class="px-3 py-1 text-sm font-medium rounded-full ${
+                        trainee.status === 'Present' ? 'bg-green-100 text-green-800' :
+                        trainee.status === 'Sick Call' ? 'bg-yellow-100 text-yellow-800' :
+                        trainee.status === 'On Leave' ? 'bg-blue-100 text-blue-800' :
+                        'bg-red-100 text-red-800'
+                    }">${trainee.status}</span>
                 </div>
                 <p class="text-sm text-gray-600 mb-2">Platoon: ${trainee.platoon} | Gender: ${trainee.gender}</p>
                 <div class="flex flex-wrap items-center gap-2 text-xs">
-                    ${profile.restriction ? `<span title="${profile.restriction}" class="bg-red-100 text-red-800 px-2 py-1 rounded-full font-medium">PROFILE</span>` : ''}
-                    ${fitness.acftScore === 'Fail' ? `<span class="bg-red-100 text-red-800 px-2 py-1 rounded-full font-medium">ACFT FAIL</span>` : ''}
-                    ${fitness.rifleQual === 'Fail' ? `<span class="bg-red-100 text-red-800 px-2 py-1 rounded-full font-medium">RIFLE FAIL</span>` : ''}
+                    ${profileData.restriction ? `<span title="${profileData.restriction}" class="bg-red-100 text-red-800 px-2 py-1 rounded-full font-medium">PROFILE</span>` : ''}
+                    ${fitnessData.acftScore === 'Fail' ? `<span class="bg-red-100 text-red-800 px-2 py-1 rounded-full font-medium">ACFT FAIL</span>` : ''}
+                    ${fitnessData.rifleQual === 'Fail' ? `<span class="bg-red-100 text-red-800 px-2 py-1 rounded-full font-medium">RIFLE FAIL</span>` : ''}
                     ${hasUpcomingAppointment ? `<span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full font-medium">APPT</span>` : ''}
                     ${sickCallCount > 0 ? `<span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full font-medium">${sickCallCount}x SICK CALL</span>` : ''}
                     ${hasTaggedNote ? `<span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-full font-medium">TAGGED</span>` : ''}
@@ -1066,98 +1243,48 @@
             card.addEventListener('click', () => showTraineeModal(trainee));
             return card;
         };
-        
-        // --- MODAL MANAGEMENT ---
 
-        const showTraineeModal = (trainee) => {
-            currentEditingTraineeId = trainee.id;
-            modalNameEl.textContent = trainee.name;
-            modalStatusEl.value = trainee.status;
-            traineeLocationEl.value = trainee.location || '';
-            modalRankEl.value = trainee.rank || '';
-            modalGenderEl.value = trainee.gender || 'Other';
+        // Show/Hide Add Trainee Form
+        addTraineeBtn.addEventListener('click', () => {
+            addTraineeFormContainer.classList.remove('hidden');
+        });
 
-            const { profile = {}, fitness = {}, appointments = [], history = [], counselingHistory = [], customNotes = [], trainingEvents = [] } = trainee;
+        cancelAddBtn.addEventListener('click', () => {
+            addTraineeFormContainer.classList.add('hidden');
+            traineeForm.reset();
+        });
 
-            acftScoreEl.value = fitness.acftScore || '';
-            runTimeEl.value = fitness.runTime || '';
-            rifleQualEl.value = fitness.rifleQual || '';
-            profileRestrictionEl.value = profile.restriction || '';
-            profileEndDateEl.value = profile.endDate || '';
-
-            trainingEventsListEl.innerHTML = globalTrainingEvents.map(event => `
-                <div class="flex items-center">
-                    <input type="checkbox" id="event-${event.id}" data-event-id="${event.id}" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" ${trainingEvents.includes(event.id) ? 'checked' : ''}>
-                    <label for="event-${event.id}" class="ml-2 block text-sm text-gray-900">${event.name}</label>
-                </div>
-            `).join('');
-            
-            modalNotesEl.value = (history || []).map(item => `[${formatTimestamp(item.timestamp)}] ${item.type}: ${item.details}`).join('\n');
-            
-            renderDynamicList(counselingListEl, counselingHistory, (record, index) => `
-                <span>[${formatTimestamp(record.timestamp)}] ${record.details}</span>`, 'delete-counseling', index);
-
-            renderDynamicList(notesListEl, customNotes, (note, index) => `
-                <div class="flex-1 space-y-1">
-                    <div class="flex items-center">
-                        <span class="px-2 py-0.5 text-xs font-semibold rounded-full ${
-                            note.priority === 'High' ? 'bg-red-200 text-red-800' :
-                            note.priority === 'Medium' ? 'bg-yellow-200 text-yellow-800' :
-                            'bg-gray-200 text-gray-800'
-                        }">${note.priority}</span>
-                        <span class="ml-2 text-gray-700">${note.text}</span>
-                    </div>
-                    <p class="text-xs text-gray-500">${formatTimestamp(note.timestamp)}</p>
-                </div>`, 'delete-note', index);
-
-            renderDynamicList(appointmentsListEl, appointments, (app, index) => `
-                <div class="flex-1">
-                    <span class="font-semibold">${formatDate(app.date)} @ ${app.time} - ${app.location}:</span>
-                    <span>${app.description}</span>
-                </div>`, 'delete-appointment', index);
-
-
-            traineeModal.classList.remove('hidden');
-            document.body.classList.add('modal-open');
-        };
-
-        const renderDynamicList = (element, items, renderFn, deleteClass, indexKey) => {
-            element.innerHTML = (items || []).map((item, index) => `
-                <div class="p-2 bg-gray-100 rounded-lg text-sm flex justify-between items-start">
-                    ${renderFn(item, index)}
-                    <button class="text-red-500 hover:text-red-700 ml-2 ${deleteClass}" data-index="${index}">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 pointer-events-none" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm6 0a1 1 0 112 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" />
-                        </svg>
-                    </button>
-                </div>
-            `).join('');
-        };
-        
-        // --- DATA MANIPULATION (ADD/UPDATE/DELETE) ---
-
+        // Add a new trainee to Firestore
         traineeForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const formData = new FormData(traineeForm);
-            const newTraineeData = {
-                name: formData.get('name').trim(),
-                platoon: formData.get('platoon').trim(),
-                rank: formData.get('rank').trim(),
-                gender: formData.get('gender').trim(),
-                status: 'Present',
-                location: '',
-                history: [{ type: 'Added', details: 'Trainee added to the roster.', timestamp: Timestamp.now() }],
-                profile: { restriction: '', endDate: '' },
-                appointments: [],
-                fitness: { acftScore: '', runTime: '', rifleQual: '' },
-                counselingHistory: [],
-                trainingEvents: [],
-                customNotes: []
-            };
-            if (!newTraineeData.name || !newTraineeData.platoon || !newTraineeData.rank || !newTraineeData.gender) return;
+            const name = formData.get('name').trim();
+            const platoon = formData.get('platoon').trim();
+            const rank = formData.get('rank').trim();
+            const gender = formData.get('gender').trim();
+            if (!name || !platoon || !rank || !gender) return;
 
             try {
-                const traineesColRef = collection(db, `artifacts/${appId}/users/${userId}/trainees`);
+                const traineesColRef = collection(db, `artifacts/${traineeAppId}/users/${userId}/trainees`);
+                const newTraineeData = {
+                    name,
+                    platoon,
+                    rank,
+                    gender,
+                    status: 'Present',
+                    location: '',
+                    history: JSON.stringify([{
+                        type: 'Added',
+                        details: 'Trainee added to the roster.',
+                        timestamp: new Date().toISOString()
+                    }]),
+                    profile: JSON.stringify({ restriction: '', endDate: '' }),
+                    appointments: JSON.stringify([]),
+                    fitness: JSON.stringify({ acftScore: '', runTime: '', rifleQual: '' }),
+                    counselingHistory: JSON.stringify([]),
+                    trainingEvents: JSON.stringify([]),
+                    customNotes: JSON.stringify([])
+                };
                 await addDoc(traineesColRef, newTraineeData);
                 traineeForm.reset();
                 addTraineeFormContainer.classList.add('hidden');
@@ -1166,129 +1293,358 @@
             }
         });
 
-        const addDynamicItem = async (fieldName, newItem) => {
-            if (!currentEditingTraineeId) return;
-            const traineeDocRef = doc(db, `artifacts/${appId}/users/${userId}/trainees/${currentEditingTraineeId}`);
-            try {
-                const traineeDocSnap = await getDoc(traineeDocRef);
-                if (traineeDocSnap.exists()) {
-                    const currentData = traineeDocSnap.data();
-                    const items = currentData[fieldName] || [];
-                    items.push(newItem);
-                    await setDoc(traineeDocRef, { [fieldName]: items }, { merge: true });
-                }
-            } catch (error) {
-                console.error(`Error adding ${fieldName}:`, error);
-            }
-        }
-        
-        const deleteDynamicItem = async (fieldName, index) => {
-            if (!currentEditingTraineeId) return;
-            const traineeDocRef = doc(db, `artifacts/${appId}/users/${userId}/trainees/${currentEditingTraineeId}`);
-            try {
-                const traineeDocSnap = await getDoc(traineeDocRef);
-                if (traineeDocSnap.exists()) {
-                    const currentData = traineeDocSnap.data();
-                    const items = currentData[fieldName] || [];
-                    items.splice(index, 1);
-                    await setDoc(traineeDocRef, { [fieldName]: items }, { merge: true });
-                }
-            } catch (error) {
-                console.error(`Error deleting ${fieldName}:`, error);
-            }
-        }
+        // Show Trainee Modal for editing
+        const showTraineeModal = (trainee) => {
+            currentEditingTraineeId = trainee.id;
+            modalNameEl.textContent = trainee.name;
+            modalStatusEl.value = trainee.status;
+            traineeLocationEl.value = trainee.location || '';
+            modalRankEl.value = trainee.rank || '';
+            modalGenderEl.value = trainee.gender || 'Other';
+            document.body.classList.add('modal-open');
 
-        addAppointmentBtn.addEventListener('click', () => {
-            const appointment = {
-                date: newAppointmentDateEl.value,
-                time: newAppointmentTimeEl.value,
-                location: newAppointmentLocationEl.value.trim(),
-                description: newAppointmentDescEl.value.trim()
-            };
-            if (appointment.date && appointment.time && appointment.location && appointment.description) {
-                addDynamicItem('appointments', appointment);
-                newAppointmentDateEl.value = newAppointmentTimeEl.value = newAppointmentLocationEl.value = newAppointmentDescEl.value = '';
+            // Populate fitness data
+            let fitnessData = { acftScore: '', runTime: '', rifleQual: '' };
+            try {
+                fitnessData = JSON.parse(trainee.fitness || '{}');
+            } catch (e) {
+                console.error("Failed to parse fitness data:", e);
             }
+            acftScoreEl.value = fitnessData.acftScore || '';
+            runTimeEl.value = fitnessData.runTime || '';
+            rifleQualEl.value = fitnessData.rifleQual || '';
+
+            // Populate training events checklist
+            let completedEvents = [];
+            try {
+                completedEvents = JSON.parse(trainee.trainingEvents || '[]');
+            } catch (e) {
+                console.error("Failed to parse training events:", e);
+            }
+            trainingEventsListEl.innerHTML = globalTrainingEvents.map(event => `
+                <div class="flex items-center">
+                    <input type="checkbox" id="event-${event.id}" data-event-id="${event.id}" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" ${completedEvents.includes(event.id) ? 'checked' : ''}>
+                    <label for="event-${event.id}" class="ml-2 block text-sm text-gray-900">${event.name}</label>
+                </div>
+            `).join('');
+
+            // Populate counseling records
+            let counselingRecords = [];
+            try {
+                counselingRecords = JSON.parse(trainee.counselingHistory || '[]');
+            } catch (e) {
+                console.error("Failed to parse counseling history:", e);
+            }
+            counselingListEl.innerHTML = counselingRecords.map(record => `
+                <div class="p-2 bg-gray-100 rounded-lg text-sm flex justify-between items-center">
+                    <span>[${formatTimestamp(record.timestamp)}] ${record.details}</span>
+                    <button class="text-red-500 hover:text-red-700 ml-2 delete-counseling" data-timestamp="${record.timestamp}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm6 0a1 1 0 112 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            `).join('');
+            counselingListEl.querySelectorAll('.delete-counseling').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const timestamp = e.currentTarget.dataset.timestamp;
+                    const currentTrainee = traineesData.find(t => t.id === currentEditingTraineeId);
+                    let records = JSON.parse(currentTrainee.counselingHistory || '[]');
+                    records = records.filter(record => record.timestamp !== timestamp);
+                    currentTrainee.counselingHistory = JSON.stringify(records);
+                    showTraineeModal(currentTrainee);
+                });
+            });
+
+            // Populate custom notes
+            let customNotes = [];
+            try {
+                customNotes = JSON.parse(trainee.customNotes || '[]');
+            } catch(e) {
+                console.error("Failed to parse custom notes:", e);
+            }
+            notesListEl.innerHTML = customNotes.map(note => `
+                <div class="p-2 bg-gray-100 rounded-lg text-sm flex justify-between items-start">
+                    <div class="flex-1 space-y-1">
+                        <div class="flex items-center">
+                            <span class="px-2 py-0.5 text-xs font-semibold rounded-full ${
+                                note.priority === 'High' ? 'bg-red-200 text-red-800' :
+                                note.priority === 'Medium' ? 'bg-yellow-200 text-yellow-800' :
+                                'bg-gray-200 text-gray-800'
+                            }">${note.priority}</span>
+                            <span class="ml-2 text-gray-700">${note.text}</span>
+                        </div>
+                        <p class="text-xs text-gray-500">${formatTimestamp(note.timestamp)}</p>
+                    </div>
+                    <button class="text-red-500 hover:text-red-700 ml-2 delete-note" data-timestamp="${note.timestamp}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm6 0a1 1 0 112 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            `).join('');
+
+            notesListEl.querySelectorAll('.delete-note').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const timestamp = e.currentTarget.dataset.timestamp;
+                    showConfirmation("Delete Note", "Are you sure you want to delete this note?", async () => {
+                        const currentTrainee = traineesData.find(t => t.id === currentEditingTraineeId);
+                        let notes = JSON.parse(currentTrainee.customNotes || '[]');
+                        notes = notes.filter(note => note.timestamp !== timestamp);
+                        try {
+                            const traineeDocRef = doc(db, `artifacts/${traineeAppId}/users/${userId}/trainees/${currentEditingTraineeId}`);
+                            await setDoc(traineeDocRef, { customNotes: JSON.stringify(notes) }, { merge: true });
+                        } catch (error) {
+                            console.error("Error deleting note:", error);
+                        }
+                    });
+                });
+            });
+
+            // Populate profile data
+            let profileData = { restriction: '', endDate: '' };
+            try {
+                profileData = JSON.parse(trainee.profile || '{}');
+            } catch (e) {
+                console.error("Failed to parse profile data:", e);
+            }
+            profileRestrictionEl.value = profileData.restriction;
+            profileEndDateEl.value = profileData.endDate;
+            
+            // Populate appointments
+            let appointments = [];
+            try {
+                appointments = JSON.parse(trainee.appointments || '[]');
+            } catch(e) {
+                console.error("Failed to parse appointments:", e);
+            }
+            appointmentsListEl.innerHTML = appointments.map(app => `
+                <div class="p-2 bg-gray-100 rounded-lg text-sm flex justify-between items-start">
+                    <div class="flex-1">
+                        <span class="font-semibold">${formatDate(app.date)} @ ${app.time} - ${app.location}:</span>
+                        <span>${app.description}</span>
+                    </div>
+                    <button class="text-red-500 hover:text-red-700 ml-2 delete-appointment-btn" data-timestamp="${app.date + app.time + app.location}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm6 0a1 1 0 112 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            `).join('');
+
+            appointmentsListEl.querySelectorAll('.delete-appointment-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const timestamp = e.currentTarget.dataset.timestamp;
+                    showConfirmation("Delete Appointment", "Are you sure you want to delete this appointment?", async () => {
+                        const currentTrainee = traineesData.find(t => t.id === currentEditingTraineeId);
+                        let appointments = JSON.parse(currentTrainee.appointments || '[]');
+                        appointments = appointments.filter(app => app.date + app.time + app.location !== timestamp);
+                        try {
+                            const traineeDocRef = doc(db, `artifacts/${traineeAppId}/users/${userId}/trainees/${currentEditingTraineeId}`);
+                            await setDoc(traineeDocRef, { appointments: JSON.stringify(appointments) }, { merge: true });
+                        } catch (error) {
+                            console.error("Error deleting appointment:", error);
+                        }
+                    });
+                });
+            });
+
+            // Populate history notes
+            let notesString = '';
+            try {
+                const history = JSON.parse(trainee.history || '[]');
+                history.forEach(item => {
+                    notesString += `[${formatTimestamp(item.timestamp)}] ${item.type}: ${item.details}\n`;
+                });
+            } catch (e) {
+                console.error("Failed to parse history notes:", e);
+                notesString = "Error loading history.";
+            }
+            modalNotesEl.value = notesString;
+
+            traineeModal.classList.remove('hidden');
+        };
+
+        // Add a new appointment to the modal's in-memory data
+        addAppointmentBtn.addEventListener('click', () => {
+            const date = newAppointmentDateEl.value;
+            const time = newAppointmentTimeEl.value;
+            const location = newAppointmentLocationEl.value.trim();
+            const desc = newAppointmentDescEl.value.trim();
+            if (!date || !time || !location || !desc) return;
+            
+            const currentTrainee = traineesData.find(t => t.id === currentEditingTraineeId);
+            let appointments = JSON.parse(currentTrainee.appointments || '[]');
+            appointments.push({ date, time, location, description: desc });
+            
+            appointmentsListEl.innerHTML += `
+                <div class="p-2 bg-gray-100 rounded-lg text-sm flex justify-between items-start">
+                    <div class="flex-1">
+                        <span class="font-semibold">${formatDate(date)} @ ${time} - ${location}:</span>
+                        <span>${desc}</span>
+                    </div>
+                    <button class="text-red-500 hover:text-red-700 ml-2 delete-appointment-btn" data-timestamp="${date + time + location}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm6 0a1 1 0 112 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            `;
+            
+            newAppointmentDateEl.value = '';
+            newAppointmentTimeEl.value = '';
+            newAppointmentLocationEl.value = '';
+            newAppointmentDescEl.value = '';
+            
+            // Update the in-memory trainee data to be saved later
+            currentTrainee.appointments = JSON.stringify(appointments);
         });
 
+        // Add a new counseling record to the modal's in-memory data
         addCounselingBtn.addEventListener('click', () => {
             const desc = newCounselingDescEl.value.trim();
-            if (desc) {
-                addDynamicItem('counselingHistory', { timestamp: Timestamp.now(), details: desc });
-                newCounselingDescEl.value = '';
-            }
+            if (!desc) return;
+            
+            const currentTrainee = traineesData.find(t => t.id === currentEditingTraineeId);
+            let records = JSON.parse(currentTrainee.counselingHistory || '[]');
+            const timestamp = new Date().toISOString();
+            records.push({ timestamp, details: desc });
+            
+            counselingListEl.innerHTML += `
+                <div class="p-2 bg-gray-100 rounded-lg text-sm flex justify-between items-center">
+                    <span>[${formatTimestamp(timestamp)}] ${desc}</span>
+                    <button class="text-red-500 hover:text-red-700 ml-2 delete-counseling" data-timestamp="${timestamp}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm6 0a1 1 0 112 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            `;
+            
+            newCounselingDescEl.value = '';
+            
+            // Update the in-memory trainee data to be saved later
+            currentTrainee.counselingHistory = JSON.stringify(records);
         });
-
+        
+        // Add a new custom note to the modal's in-memory data
         addNoteBtn.addEventListener('click', () => {
-            const note = {
-                text: newNoteTextEl.value.trim(),
-                priority: newNotePriorityEl.value,
-                timestamp: Timestamp.now()
-            };
-            if (note.text) {
-                addDynamicItem('customNotes', note);
-                newNoteTextEl.value = '';
-                newNotePriorityEl.value = 'Low';
-            }
+            const text = newNoteTextEl.value.trim();
+            const priority = newNotePriorityEl.value;
+            if (!text) return;
+
+            const currentTrainee = traineesData.find(t => t.id === currentEditingTraineeId);
+            let notes = JSON.parse(currentTrainee.customNotes || '[]');
+            const timestamp = new Date().toISOString();
+            notes.push({ timestamp, text, priority });
+
+            notesListEl.innerHTML += `
+                <div class="p-2 bg-gray-100 rounded-lg text-sm flex justify-between items-start">
+                    <div class="flex-1 space-y-1">
+                        <div class="flex items-center">
+                            <span class="px-2 py-0.5 text-xs font-semibold rounded-full ${
+                                note.priority === 'High' ? 'bg-red-200 text-red-800' :
+                                note.priority === 'Medium' ? 'bg-yellow-200 text-yellow-800' :
+                                'bg-gray-200 text-gray-800'
+                            }">${note.priority}</span>
+                            <span class="ml-2 text-gray-700">${text}</span>
+                        </div>
+                        <p class="text-xs text-gray-500">${formatTimestamp(timestamp)}</p>
+                    </div>
+                    <button class="text-red-500 hover:text-red-700 ml-2 delete-note" data-timestamp="${timestamp}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm6 0a1 1 0 112 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            `;
+
+            newNoteTextEl.value = '';
+            newNotePriorityEl.value = 'Low';
+
+            // Update the in-memory trainee data to be saved later
+            currentTrainee.customNotes = JSON.stringify(notes);
         });
 
-        traineeModal.addEventListener('click', (e) => {
-            if (e.target.matches('.delete-counseling')) {
-                showConfirmation("Delete Record", "Are you sure?", () => deleteDynamicItem('counselingHistory', e.target.dataset.index));
-            } else if (e.target.matches('.delete-note')) {
-                 showConfirmation("Delete Note", "Are you sure?", () => deleteDynamicItem('customNotes', e.target.dataset.index));
-            } else if (e.target.matches('.delete-appointment')) {
-                showConfirmation("Delete Appointment", "Are you sure?", () => deleteDynamicItem('appointments', e.target.dataset.index));
-            }
+
+        // Close Trainee Modal
+        closeModalBtn.addEventListener('click', () => {
+            traineeModal.classList.add('hidden');
+            currentEditingTraineeId = null;
+            document.body.classList.remove('modal-open');
         });
 
+        // Update Trainee details
         updateTraineeBtn.addEventListener('click', async () => {
             if (!currentEditingTraineeId) return;
             
-            setButtonLoading(updateTraineeBtn, true);
-
-            const trainee = traineesData.find(t => t.id === currentEditingTraineeId);
-            const history = trainee.history || [];
-            history.push({ type: 'Updated', details: 'Data updated via modal.', timestamp: Timestamp.now() });
-
-            const completedTrainingEvents = Array.from(trainingEventsListEl.querySelectorAll('input:checked')).map(cb => cb.dataset.eventId);
-
-            const updatedData = {
-                status: modalStatusEl.value,
-                location: traineeLocationEl.value.trim(),
-                rank: modalRankEl.value.trim(),
-                gender: modalGenderEl.value,
-                history: history,
-                profile: {
-                    restriction: profileRestrictionEl.value.trim(),
-                    endDate: profileEndDateEl.value
-                },
-                fitness: {
-                    acftScore: acftScoreEl.value,
-                    runTime: runTimeEl.value.trim(),
-                    rifleQual: rifleQualEl.value
-                },
-                trainingEvents: completedTrainingEvents,
-                updatedAt: Timestamp.now()
+            const currentTrainee = traineesData.find(t => t.id === currentEditingTraineeId);
+            const newStatus = modalStatusEl.value;
+            const newLocation = traineeLocationEl.value.trim();
+            const newRank = modalRankEl.value.trim();
+            const newGender = modalGenderEl.value;
+            
+            const profile = {
+                restriction: profileRestrictionEl.value.trim(),
+                endDate: profileEndDateEl.value
             };
 
+            const fitness = {
+                acftScore: acftScoreEl.value,
+                runTime: runTimeEl.value.trim(),
+                rifleQual: rifleQualEl.value
+            };
+            
+            const completedTrainingEvents = [];
+            trainingEventsListEl.querySelectorAll('input[type="checkbox"]:checked').forEach(checkbox => {
+                completedTrainingEvents.push(checkbox.dataset.eventId);
+            });
+            
+            // Re-parse the history and add new entry
+            let history = [];
             try {
-                const traineeDocRef = doc(db, `artifacts/${appId}/users/${userId}/trainees/${currentEditingTraineeId}`);
-                await setDoc(traineeDocRef, updatedData, { merge: true });
+                history = JSON.parse(currentTrainee.history || '[]');
+            } catch(e) {
+                console.error("Failed to parse history during update:", e);
+            }
+            history.push({
+                type: 'Updated',
+                details: 'Data updated via modal.',
+                timestamp: new Date().toISOString()
+            });
+
+            try {
+                const traineeDocRef = doc(db, `artifacts/${traineeAppId}/users/${userId}/trainees/${currentEditingTraineeId}`);
+                await setDoc(traineeDocRef, {
+                    status: newStatus,
+                    location: newLocation,
+                    rank: newRank,
+                    gender: newGender,
+                    history: JSON.stringify(history),
+                    profile: JSON.stringify(profile),
+                    appointments: currentTrainee.appointments,
+                    fitness: JSON.stringify(fitness),
+                    counselingHistory: currentTrainee.counselingHistory,
+                    trainingEvents: JSON.stringify(completedTrainingEvents),
+                    customNotes: currentTrainee.customNotes,
+                    updatedAt: new Date()
+                }, { merge: true });
                 traineeModal.classList.add('hidden');
                 document.body.classList.remove('modal-open');
             } catch (error) {
                 console.error("Error updating trainee:", error);
-            } finally {
-                setButtonLoading(updateTraineeBtn, false);
             }
         });
         
+        // Delete Trainee
         deleteTraineeBtn.addEventListener('click', async () => {
             if (!currentEditingTraineeId) return;
-            showConfirmation("Delete Trainee", "Are you sure? This action is permanent.", async () => {
+            showConfirmation("Delete Trainee", "Are you sure you want to delete this trainee? This action cannot be undone.", async () => {
                 try {
-                    const traineeDocRef = doc(db, `artifacts/${appId}/users/${userId}/trainees/${currentEditingTraineeId}`);
+                    const traineeDocRef = doc(db, `artifacts/${traineeAppId}/users/${userId}/trainees/${currentEditingTraineeId}`);
                     await deleteDoc(traineeDocRef);
                     traineeModal.classList.add('hidden');
                     currentEditingTraineeId = null;
@@ -1298,219 +1654,184 @@
                 }
             });
         });
-        
-        // --- BULK ADD LOGIC ---
-        bulkAddSaveBtn.addEventListener('click', async () => {
-             setButtonLoading(bulkAddSaveBtn, true);
-             const lines = bulkTraineeInput.value.trim().split('\n');
-             const traineesColRef = collection(db, `artifacts/${appId}/users/${userId}/trainees`);
 
-             for (const line of lines) {
+        // Daily Check-in Modal Logic
+        skipCheckInBtn.addEventListener('click', async () => {
+            const userDocRef = doc(db, `artifacts/${traineeAppId}/users/${userId}/_metadata/app`);
+            await setDoc(userDocRef, { lastDailyCheckIn: new Date().toISOString().slice(0, 10) }, { merge: true });
+            dailyCheckInModal.classList.add('hidden');
+        });
+
+        submitCheckInBtn.addEventListener('click', async () => {
+            const traineeUpdates = {};
+            const selectElements = dailyCheckInListEl.querySelectorAll('.status-select');
+            selectElements.forEach(selectEl => {
+                const traineeId = selectEl.dataset.id;
+                const newStatus = selectEl.value;
+                const trainee = traineesData.find(t => t.id === traineeId);
+                
+                if (trainee && trainee.status !== newStatus) {
+                    let history = [];
+                    try {
+                        history = JSON.parse(trainee.history || '[]');
+                    } catch(e) {
+                        console.error("Failed to parse history during check-in:", e);
+                    }
+                    history.push({
+                        type: 'Status Update (Daily Check-in)',
+                        details: `Status changed from '${trainee.status}' to '${newStatus}'.`,
+                        timestamp: new Date().toISOString()
+                    });
+                    
+                    traineeUpdates[traineeId] = {
+                        status: newStatus,
+                        history: JSON.stringify(history)
+                    };
+                }
+            });
+
+            // Batch updates to Firestore
+            for (const id in traineeUpdates) {
+                try {
+                    const traineeDocRef = doc(db, `artifacts/${traineeAppId}/users/${userId}/trainees/${id}`);
+                    await setDoc(traineeDocRef, traineeUpdates[id], { merge: true });
+                } catch (error) {
+                    console.error(`Error updating trainee ${id} during check-in:`, error);
+                }
+            }
+
+            const userDocRef = doc(db, `artifacts/${traineeAppId}/users/${userId}/_metadata/app`);
+            await setDoc(userDocRef, { lastDailyCheckIn: new Date().toISOString().slice(0, 10) }, { merge: true });
+            dailyCheckInModal.classList.add('hidden');
+        });
+
+        // Bulk Add Trainees Logic
+        bulkAddBtn.addEventListener('click', () => {
+            bulkAddModal.classList.remove('hidden');
+            document.body.classList.add('modal-open');
+        });
+
+        closeBulkAddModalBtn.addEventListener('click', () => {
+            bulkAddModal.classList.add('hidden');
+            bulkTraineeInput.value = '';
+            document.body.classList.remove('modal-open');
+        });
+
+        bulkAddCancelBtn.addEventListener('click', () => {
+            bulkAddModal.classList.add('hidden');
+            bulkTraineeInput.value = '';
+            document.body.classList.remove('modal-open');
+        });
+
+        bulkAddSaveBtn.addEventListener('click', async () => {
+            const lines = bulkTraineeInput.value.trim().split('\n');
+            const newTrainees = [];
+            lines.forEach(line => {
                 const parts = line.split(';');
                 if (parts.length >= 2) {
                     const traineeInfo = parts[0].trim().split(',').map(s => s.trim());
                     const platoon = parts[1].trim();
 
-                    // Robustly parse trainee info to handle complex names
-                    if (traineeInfo.length >= 3) { // Must have at least Rank, Name, Gender
-                        const rank = traineeInfo[0];
-                        const gender = traineeInfo[traineeInfo.length - 1];
-                        const name = traineeInfo.slice(1, traineeInfo.length - 1).join(' ');
-
-                        // Validate gender to be one of the expected values
-                        const validGenders = ['Male', 'Female', 'Other'];
-                        // Capitalize first letter, lowercase the rest for consistency.
-                        const normalizedGender = gender.charAt(0).toUpperCase() + gender.slice(1).toLowerCase();
-
-                        if (rank && name && platoon && validGenders.includes(normalizedGender)) {
-                             const newTraineeData = {
-                                name, 
-                                platoon, 
-                                rank, 
-                                gender: normalizedGender, // Use the normalized gender
-                                status: 'Present', 
-                                location: '',
-                                history: [{ type: 'Added', details: 'Trainee added via bulk upload.', timestamp: Timestamp.now() }],
-                                profile: { restriction: '', endDate: '' }, 
-                                appointments: [], 
-                                fitness: {}, 
-                                counselingHistory: [], 
-                                trainingEvents: [], 
-                                customNotes: []
-                            };
-                            try {
-                               await addDoc(traineesColRef, newTraineeData);
-                            } catch (e) {
-                               console.error("Failed to add trainee:", name, e);
-                            }
-                        } else {
-                           console.warn("Skipping invalid line (check rank, name, platoon, and gender):", line);
-                        }
-                    } else {
-                        console.warn("Skipping line with not enough parts:", line);
+                    if (traineeInfo.length === 3 && traineeInfo[0] && traineeInfo[1] && traineeInfo[2] && platoon) {
+                        const [rank, name, gender] = traineeInfo;
+                        newTrainees.push({ name, platoon, rank, gender });
                     }
                 }
-             }
-             bulkAddModal.classList.add('hidden');
-             bulkTraineeInput.value = '';
-             document.body.classList.remove('modal-open');
-             setButtonLoading(bulkAddSaveBtn, false);
-        });
-
-        // --- MANAGE EVENTS LOGIC ---
-        addTrainingEventBtn.addEventListener('click', async () => {
-            const newEventName = newTrainingEventNameEl.value.trim();
-            if (newEventName) {
-                 try {
-                    const eventsColRef = collection(db, `artifacts/${appId}/users/${userId}/training_events`);
-                    await addDoc(eventsColRef, { name: newEventName });
-                    newTrainingEventNameEl.value = '';
-                } catch (error) { console.error("Error adding training event:", error); }
-            }
-        });
-
-        updateTraineeEventsBtn.addEventListener('click', async () => {
-            const selectedEventId = updateEventSelectorEl.value;
-            if (!selectedEventId) return;
-            setButtonLoading(updateTraineeEventsBtn, true);
-
-            const traineeCheckboxes = traineeEventUpdateListEl.querySelectorAll('input[type="checkbox"]');
-            for (const checkbox of traineeCheckboxes) {
-                const traineeId = checkbox.dataset.traineeId;
-                const trainee = traineesData.find(t => t.id === traineeId);
-                if (!trainee) continue;
-                
-                let completedEvents = trainee.trainingEvents || [];
-                const hasCompleted = completedEvents.includes(selectedEventId);
-                const isChecked = checkbox.checked;
-                
-                let needsUpdate = false;
-                if (isChecked && !hasCompleted) {
-                    completedEvents.push(selectedEventId);
-                    needsUpdate = true;
-                } else if (!isChecked && hasCompleted) {
-                    completedEvents = completedEvents.filter(id => id !== selectedEventId);
-                    needsUpdate = true;
-                }
-
-                if (needsUpdate) {
-                     try {
-                        const traineeDocRef = doc(db, `artifacts/${appId}/users/${userId}/trainees/${traineeId}`);
-                        await setDoc(traineeDocRef, { trainingEvents: completedEvents }, { merge: true });
-                    } catch (error) { console.error(`Error updating trainee ${traineeId}:`, error); }
-                }
-            }
-            manageEventsModal.classList.add('hidden');
-            document.body.classList.remove('modal-open');
-            setButtonLoading(updateTraineeEventsBtn, false);
-        });
-        
-        // --- EVENT LISTENERS ---
-        // Store original button text for loading state
-        document.querySelectorAll('button').forEach(btn => {
-            if (btn.id === 'updateTraineeBtn' || btn.id === 'bulkAddSaveBtn' || btn.id === 'updateTraineeEventsBtn') {
-                 btn.dataset.originalText = btn.textContent;
-            }
-        });
-        
-        // General UI listeners
-        traineeSearchEl.addEventListener('input', renderTraineeList);
-        platoonFilterEl.addEventListener('change', (e) => handlePlatoonFilterChange(e.target.value));
-        dashboardPlatoonFilterEl.addEventListener('change', (e) => handlePlatoonFilterChange(e.target.value));
-        updatePlatoonSelectorEl.addEventListener('change', (e) => handlePlatoonFilterChange(e.target.value));
-        viewPlatoonSelectorEl.addEventListener('change', (e) => handlePlatoonFilterChange(e.target.value));
-
-        // Listeners for event dropdowns in the modal to re-render their respective lists
-        updateEventSelectorEl.addEventListener('change', renderTraineeEventUpdateList);
-        viewEventSelectorEl.addEventListener('change', renderTraineeEventViewList);
-
-
-        // Event listeners for opening/closing modals
-        const modalTriggers = {
-            'addTraineeBtn': addTraineeFormContainer,
-            'bulkAddBtn': bulkAddModal,
-            'openEventsModal': manageEventsModal,
-            'openTasksModal': manageTasksModal,
-        };
-        const modalClosers = {
-            'cancelAddBtn': addTraineeFormContainer,
-            'closeBulkAddModalBtn': bulkAddModal,
-            'bulkAddCancelBtn': bulkAddModal,
-            'closeEventsModalBtn': manageEventsModal,
-            'closeManageTasksBtn': manageTasksModal,
-            'closeTasksModal': manageTasksModal,
-            'closeModalBtn': traineeModal
-        };
-
-        Object.entries(modalTriggers).forEach(([btnId, modal]) => {
-            document.getElementById(btnId).addEventListener('click', () => {
-                modal.classList.remove('hidden');
-                document.body.classList.add('modal-open');
             });
-        });
 
-        Object.entries(modalClosers).forEach(([btnId, modal]) => {
-            document.getElementById(btnId).addEventListener('click', () => {
-                modal.classList.add('hidden');
-                document.body.classList.remove('modal-open');
-            });
-        });
-        
-        // Close modal on background click
-        document.querySelectorAll('.modal').forEach(modal => {
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    modal.classList.add('hidden');
+            if (newTrainees.length > 0) {
+                try {
+                    const traineesColRef = collection(db, `artifacts/${traineeAppId}/users/${userId}/trainees`);
+                    for (const trainee of newTrainees) {
+                        const newTraineeData = {
+                            name: trainee.name,
+                            platoon: trainee.platoon,
+                            rank: trainee.rank,
+                            gender: trainee.gender,
+                            status: 'Present',
+                            location: '',
+                            history: JSON.stringify([{
+                                type: 'Added',
+                                details: 'Trainee added via bulk upload.',
+                                timestamp: new Date().toISOString()
+                            }]),
+                            profile: JSON.stringify({ restriction: '', endDate: '' }),
+                            appointments: JSON.stringify([]),
+                            fitness: JSON.stringify({ acftScore: '', runTime: '', rifleQual: '' }),
+                            counselingHistory: JSON.stringify([]),
+                            trainingEvents: JSON.stringify([]),
+                            customNotes: JSON.stringify([])
+                        };
+                        await addDoc(traineesColRef, newTraineeData);
+                    }
+                    bulkAddModal.classList.add('hidden');
+                    bulkTraineeInput.value = '';
                     document.body.classList.remove('modal-open');
+                } catch (error) {
+                    console.error("Error adding trainees in bulk:", error);
+                    // Handle error with a custom modal if needed
                 }
-            });
+            }
         });
 
-        // --- PLATOON FILTER SYNCHRONIZATION ---
-        const handlePlatoonFilterChange = (platoon) => {
-            currentPlatoonFilter = platoon;
-            
-            // Synchronize all dropdowns
-            dashboardPlatoonFilterEl.value = platoon;
-            platoonFilterEl.value = platoon;
-            updatePlatoonSelectorEl.value = platoon;
-            viewPlatoonSelectorEl.value = platoon;
-            
-            // Update relevant parts of the UI
-            updateAvailableTraineeCount(platoon);
-            renderTraineeList();
-            
-            // These will be called, but the rendering inside will depend on other selections (like event)
+        // Manage Events Modal (Consolidated)
+        openEventsModalBtn.addEventListener('click', () => {
+            manageEventsModal.classList.remove('hidden');
+            document.body.classList.add('modal-open');
+            renderTrainingEventsManagementList();
             renderTraineeEventUpdateList();
             renderTraineeEventViewList();
-        };
+        });
 
-        // --- DATA & UI POPULATION ---
-        const populatePlatoonFilters = () => {
-            const sortedPlatoons = Array.from(platoons).sort();
-            const platoonOptions = sortedPlatoons.map(p => `<option value="${p}">${p}</option>`).join('');
+        closeEventsModalBtn.addEventListener('click', () => {
+            manageEventsModal.classList.add('hidden');
+            document.body.classList.remove('modal-open');
+        });
+        
+        // Add new training event
+        addTrainingEventBtn.addEventListener('click', async () => {
+            const newEventName = newTrainingEventNameEl.value.trim();
+            if (!newEventName) return;
 
-            dashboardPlatoonFilterEl.innerHTML = '<option value="All">All Platoons</option>' + platoonOptions;
-            platoonFilterEl.innerHTML = '<option value="All">All Platoons</option>' + platoonOptions;
-            updatePlatoonSelectorEl.innerHTML = '<option value="All">Entire Company Roster</option>' + platoonOptions;
-            viewPlatoonSelectorEl.innerHTML = '<option value="All">All Platoons</option>' + platoonOptions;
+            try {
+                const eventsColRef = collection(db, `artifacts/${traineeAppId}/users/${userId}/training_events`);
+                await addDoc(eventsColRef, { name: newEventName });
+                newTrainingEventNameEl.value = '';
+            } catch (error) {
+                console.error("Error adding training event:", error);
+            }
+        });
+        
+        const renderTrainingEventsManagementList = () => {
+            trainingEventsManagementListEl.innerHTML = globalTrainingEvents.map(event => `
+                <div class="flex justify-between items-center p-2 bg-gray-50 rounded-lg">
+                    <span>${event.name}</span>
+                    <button class="text-red-500 hover:text-red-700 ml-2 delete-event-btn" data-event-id="${event.id}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm6 0a1 1 0 112 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            `).join('');
 
-            // Sync all to the global filter
-            dashboardPlatoonFilterEl.value = currentPlatoonFilter;
-            platoonFilterEl.value = currentPlatoonFilter;
-            updatePlatoonSelectorEl.value = currentPlatoonFilter;
-            viewPlatoonSelectorEl.value = currentPlatoonFilter;
-        };
-
-        const populateTrainingEventSelectors = () => {
-            const trainingEventOptions = globalTrainingEvents.map(event => `<option value="${event.id}">${event.name}</option>`).join('');
-            updateEventSelectorEl.innerHTML = '<option value="">Select an Event</option>' + trainingEventOptions;
-            viewEventSelectorEl.innerHTML = '<option value="">Select an Event</option>' + trainingEventOptions;
+            trainingEventsManagementListEl.querySelectorAll('.delete-event-btn').forEach(button => {
+                button.addEventListener('click', async (e) => {
+                    const eventId = e.currentTarget.dataset.eventId;
+                    showConfirmation("Delete Training Event", "Are you sure you want to delete this training event? This action cannot be undone.", async () => {
+                        try {
+                            const eventDocRef = doc(db, `artifacts/${traineeAppId}/users/${userId}/training_events/${eventId}`);
+                            await deleteDoc(eventDocRef);
+                        } catch (error) {
+                            console.error("Error deleting training event:", error);
+                        }
+                    });
+                });
+            });
         };
 
         const renderTraineeEventUpdateList = () => {
             const selectedEventId = updateEventSelectorEl.value;
-            const selectedPlatoon = currentPlatoonFilter;
+            const selectedPlatoon = updatePlatoonSelectorEl.value;
             traineeEventUpdateListEl.innerHTML = '';
             
             if (!selectedEventId) {
@@ -1533,7 +1854,7 @@
             filteredTrainees.forEach(trainee => {
                 let completedEvents = [];
                 try {
-                    completedEvents = trainee.trainingEvents || [];
+                    completedEvents = JSON.parse(trainee.trainingEvents || '[]');
                 } catch(e) {
                     console.error("Failed to parse trainee events:", e);
                 }
@@ -1549,6 +1870,8 @@
             });
         };
         
+        updateEventSelectorEl.addEventListener('change', renderTraineeEventUpdateList);
+
         selectAllTraineesCheckbox.addEventListener('change', (e) => {
             const isChecked = e.target.checked;
             traineeEventUpdateListEl.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
@@ -1556,9 +1879,58 @@
             });
         });
 
+        updateTraineeEventsBtn.addEventListener('click', async () => {
+            const selectedEventId = updateEventSelectorEl.value;
+            if (!selectedEventId) {
+                showConfirmation("No Event Selected", "Please select a training event to update.", () => {});
+                return;
+            }
+
+            const traineeCheckboxes = traineeEventUpdateListEl.querySelectorAll('input[type="checkbox"]');
+            
+            for (const checkbox of traineeCheckboxes) {
+                const traineeId = checkbox.dataset.traineeId;
+                const trainee = traineesData.find(t => t.id === traineeId);
+                if (!trainee) continue;
+                
+                let completedEvents = [];
+                try {
+                    completedEvents = JSON.parse(trainee.trainingEvents || '[]');
+                } catch(e) {
+                    console.error("Failed to parse trainee events:", e);
+                    continue;
+                }
+                
+                const hasCompleted = completedEvents.includes(selectedEventId);
+                const isChecked = checkbox.checked;
+                
+                if (isChecked && !hasCompleted) {
+                    // Add event
+                    completedEvents.push(selectedEventId);
+                    try {
+                        const traineeDocRef = doc(db, `artifacts/${traineeAppId}/users/${userId}/trainees/${traineeId}`);
+                        await setDoc(traineeDocRef, { trainingEvents: JSON.stringify(completedEvents) }, { merge: true });
+                    } catch (error) {
+                        console.error(`Error updating trainee ${traineeId}:`, error);
+                    }
+                } else if (!isChecked && hasCompleted) {
+                    // Remove event
+                    completedEvents = completedEvents.filter(id => id !== selectedEventId);
+                     try {
+                        const traineeDocRef = doc(db, `artifacts/${traineeAppId}/users/${userId}/trainees/${traineeId}`);
+                        await setDoc(traineeDocRef, { trainingEvents: JSON.stringify(completedEvents) }, { merge: true });
+                    } catch (error) {
+                        console.error(`Error updating trainee ${traineeId}:`, error);
+                    }
+                }
+            }
+            manageEventsModal.classList.add('hidden');
+            document.body.classList.remove('modal-open');
+        });
+
         const renderTraineeEventViewList = () => {
             const selectedEventId = viewEventSelectorEl.value;
-            const selectedPlatoon = currentPlatoonFilter;
+            const selectedPlatoon = viewPlatoonSelectorEl.value;
             traineeEventViewListEl.innerHTML = '';
 
             if (!selectedEventId) {
@@ -1581,7 +1953,7 @@
             filteredTrainees.forEach(trainee => {
                 let completedEvents = [];
                 try {
-                    completedEvents = trainee.trainingEvents || [];
+                    completedEvents = JSON.parse(trainee.trainingEvents || '[]');
                 } catch(e) {
                     console.error("Failed to parse trainee events:", e);
                 }
@@ -1598,88 +1970,186 @@
                 traineeEventViewListEl.appendChild(traineeItem);
             });
         };
+        
+        viewEventSelectorEl.addEventListener('change', renderTraineeEventViewList);
 
-        // --- DAILY CHECK-IN & APP RESET ---
-        const performDailyCheckIn = async () => {
-            if (!userId) return; // Don't run if user isn't authenticated yet
-            const userDocRef = doc(db, `artifacts/${appId}/users/${userId}/_metadata/app`);
+        // Platoon Tasks Logic
+        openTasksModalBtn.addEventListener('click', () => {
+            manageTasksModal.classList.remove('hidden');
+            document.body.classList.add('modal-open');
+        });
+
+        closeManageTasksBtn.addEventListener('click', () => {
+            manageTasksModal.classList.add('hidden');
+            document.body.classList.remove('modal-open');
+        });
+
+        addTaskBtn.addEventListener('click', async () => {
+            const text = newTaskTextEl.value.trim();
+            const priority = newTaskPriorityEl.value;
+            const dueDate = newTaskDueDateEl.value;
+            if (!text) return;
+
             try {
-                const userDocSnap = await getDoc(userDocRef);
-                const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-                
-                if (userDocSnap.exists() && userDocSnap.data().lastDailyCheckIn === today) {
-                    return; // Check-in already done for today
-                }
-
-                dailyCheckInListEl.innerHTML = '';
-                traineesData.forEach(trainee => {
-                    const checkInItem = document.createElement('div');
-                    checkInItem.className = 'flex items-center space-x-4 p-2 bg-gray-50 rounded-lg';
-                    checkInItem.innerHTML = `
-                        <div class="flex-1 font-semibold">${trainee.name}</div>
-                        <select class="status-select rounded-md border-gray-300 shadow-sm" data-id="${trainee.id}">
-                            <option value="Present" ${trainee.status === 'Present' ? 'selected' : ''}>Present</option>
-                            <option value="Sick Call" ${trainee.status === 'Sick Call' ? 'selected' : ''}>Sick Call</option>
-                            <option value="On Leave" ${trainee.status === 'On Leave' ? 'selected' : ''}>On Leave</option>
-                            <option value="Absent" ${trainee.status === 'Absent' ? 'selected' : ''}>Absent</option>
-                            <option value="Other" ${trainee.status === 'Other' ? 'selected' : ''}>Other</option>
-                        </select>
-                    `;
-                    dailyCheckInListEl.appendChild(checkInItem);
-                });
-
-                dailyCheckInModal.classList.remove('hidden');
-                document.body.classList.add('modal-open');
+                const tasksColRef = collection(db, `artifacts/${traineeAppId}/users/${userId}/tasks`);
+                const newTaskData = {
+                    text,
+                    priority,
+                    dueDate: dueDate || null,
+                    completed: false,
+                    createdAt: new Date().toISOString()
+                };
+                await addDoc(tasksColRef, newTaskData);
+                newTaskTextEl.value = '';
+                newTaskPriorityEl.value = 'Low';
+                newTaskDueDateEl.value = '';
             } catch (error) {
-                console.error("Error performing daily check-in:", error);
+                console.error("Error adding task:", error);
             }
+        });
+
+        const updateDashboardTasks = () => {
+            let outstandingCount = 0;
+            platoonTasks.forEach(task => {
+                if (!task.completed) {
+                    outstandingCount++;
+                }
+            });
+            outstandingTasksCount.textContent = outstandingCount;
+        }
+
+        const renderTasksManagementList = () => {
+            // Filter and sort tasks
+            const outstandingTasks = platoonTasks.filter(task => !task.completed);
+            const completedTasks = platoonTasks.filter(task => task.completed);
+            
+            outstandingTasks.sort((a, b) => {
+                const dueDateA = a.dueDate ? new Date(a.dueDate).getTime() : Infinity;
+                const dueDateB = b.dueDate ? new Date(b.dueDate).getTime() : Infinity;
+                
+                if (dueDateA !== dueDateB) return dueDateA - dueDateB;
+                
+                const priorityA = priorityOrder[a.priority];
+                const priorityB = priorityOrder[b.priority];
+                return priorityA - priorityB;
+            });
+            
+            tasksManagementListEl.innerHTML = '';
+            if (outstandingTasks.length === 0) {
+                 tasksManagementListEl.innerHTML = '<p class="text-center text-gray-500">No outstanding tasks at this time.</p>';
+            } else {
+                outstandingTasks.forEach(task => {
+                    const taskItem = document.createElement('div');
+                    const dueDateText = task.dueDate ? ` (Due: ${formatDate(task.dueDate)})` : '';
+                    taskItem.className = 'flex items-center space-x-2 p-2 bg-gray-50 rounded-lg';
+                    taskItem.innerHTML = `
+                        <input type="checkbox" id="task-${task.id}" data-task-id="${task.id}" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                        <div class="flex-1">
+                            <span class="px-2 py-0.5 text-xs font-semibold rounded-full ${
+                                task.priority === 'High' ? 'bg-red-200 text-red-800' :
+                                task.priority === 'Medium' ? 'bg-yellow-200 text-yellow-800' :
+                                'bg-gray-200 text-gray-800'
+                            }">${task.priority}</span>
+                            <span class="ml-2">${task.text}</span>
+                            ${task.dueDate ? `<span class="ml-2 text-xs text-gray-500">Due: ${formatDate(task.dueDate)}</span>` : ''}
+                        </div>
+                        <button class="text-red-500 hover:text-red-700 delete-task-btn" data-task-id="${task.id}">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm6 0a1 1 0 112 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    `;
+                    tasksManagementListEl.appendChild(taskItem);
+                });
+            }
+
+            completedTasksListEl.innerHTML = '';
+            if (completedTasks.length > 0) {
+                completedTasks.forEach(task => {
+                    const taskItem = document.createElement('div');
+                    taskItem.className = 'flex items-center space-x-2 p-2 bg-gray-200 rounded-lg line-through text-gray-500';
+                    taskItem.innerHTML = `
+                        <input type="checkbox" id="task-${task.id}" data-task-id="${task.id}" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" checked>
+                        <div class="flex-1">
+                            <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-gray-300 text-gray-600">${task.priority}</span>
+                            <span class="ml-2">${task.text}</span>
+                            ${task.dueDate ? `<span class="ml-2 text-xs">Due: ${formatDate(task.dueDate)}</span>` : ''}
+                        </div>
+                        <button class="text-red-500 hover:text-red-700 delete-task-btn" data-task-id="${task.id}">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm6 0a1 1 0 112 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    `;
+                    completedTasksListEl.appendChild(taskItem);
+                });
+            }
+
+            // Add event listeners for outstanding tasks checkboxes
+            tasksManagementListEl.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', async (e) => {
+                    const taskId = e.target.dataset.taskId;
+                    const isCompleted = e.target.checked;
+                    try {
+                        const taskDocRef = doc(db, `artifacts/${traineeAppId}/users/${userId}/tasks/${taskId}`);
+                        await setDoc(taskDocRef, { completed: isCompleted }, { merge: true });
+                    } catch (error) {
+                        console.error("Error updating task status:", error);
+                    }
+                });
+            });
+
+            // Add event listeners for completed tasks checkboxes
+            completedTasksListEl.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', async (e) => {
+                    const taskId = e.target.dataset.taskId;
+                    const isCompleted = e.target.checked;
+                    try {
+                        const taskDocRef = doc(db, `artifacts/${traineeAppId}/users/${userId}/tasks/${taskId}`);
+                        await setDoc(taskDocRef, { completed: isCompleted }, { merge: true });
+                    } catch (error) {
+                        console.error("Error updating task status:", error);
+                    }
+                });
+            });
+            
+            tasksManagementListEl.querySelectorAll('.delete-task-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const taskId = e.currentTarget.dataset.taskId;
+                    showConfirmation("Delete Task", "Are you sure you want to delete this task?", async () => {
+                        try {
+                            const taskDocRef = doc(db, `artifacts/${traineeAppId}/users/${userId}/tasks/${taskId}`);
+                            await deleteDoc(taskDocRef);
+                        } catch (error) {
+                            console.error("Error deleting task:", error);
+                        }
+                    });
+                });
+            });
+            
+            completedTasksListEl.querySelectorAll('.delete-task-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const taskId = e.currentTarget.dataset.taskId;
+                    showConfirmation("Delete Task", "Are you sure you want to delete this task?", async () => {
+                        try {
+                            const taskDocRef = doc(db, `artifacts/${traineeAppId}/users/${userId}/tasks/${taskId}`);
+                            await deleteDoc(taskDocRef);
+                        } catch (error) {
+                            console.error("Error deleting task:", error);
+                        }
+                    });
+                });
+            });
         };
         
-        skipCheckInBtn.addEventListener('click', async () => {
-            const userDocRef = doc(db, `artifacts/${appId}/users/${userId}/_metadata/app`);
-            await setDoc(userDocRef, { lastDailyCheckIn: new Date().toISOString().slice(0, 10) }, { merge: true });
-            dailyCheckInModal.classList.add('hidden');
-            document.body.classList.remove('modal-open');
-        });
-
-        submitCheckInBtn.addEventListener('click', async () => {
-            const selectElements = dailyCheckInListEl.querySelectorAll('.status-select');
-            
-            for (const selectEl of selectElements) {
-                const traineeId = selectEl.dataset.id;
-                const newStatus = selectEl.value;
-                const trainee = traineesData.find(t => t.id === traineeId);
-                
-                if (trainee && trainee.status !== newStatus) {
-                    const history = trainee.history || [];
-                    history.push({
-                        type: 'Status Update (Daily Check-in)',
-                        details: `Status changed from '${trainee.status}' to '${newStatus}'.`,
-                        timestamp: Timestamp.now()
-                    });
-                    
-                    try {
-                        const traineeDocRef = doc(db, `artifacts/${appId}/users/${userId}/trainees/${traineeId}`);
-                        await setDoc(traineeDocRef, { status: newStatus, history: history }, { merge: true });
-                    } catch (error) {
-                        console.error(`Error updating trainee ${traineeId} during check-in:`, error);
-                    }
-                }
-            }
-
-            const userDocRef = doc(db, `artifacts/${appId}/users/${userId}/_metadata/app`);
-            await setDoc(userDocRef, { lastDailyCheckIn: new Date().toISOString().slice(0, 10) }, { merge: true });
-            dailyCheckInModal.classList.add('hidden');
-            document.body.classList.remove('modal-open');
-        });
-
+        // --- App Reset Logic ---
         const resetAllData = async () => {
             if (!userId) return;
 
             const collectionsToClear = [
-                `artifacts/${appId}/users/${userId}/trainees`,
-                `artifacts/${appId}/users/${userId}/training_events`,
-                `artifacts/${appId}/users/${userId}/tasks`
+                `artifacts/${traineeAppId}/users/${userId}/trainees`,
+                `artifacts/${traineeAppId}/users/${userId}/training_events`,
+                `artifacts/${traineeAppId}/users/${userId}/tasks`
             ];
 
             try {
@@ -1690,91 +2160,29 @@
                     await Promise.all(deletePromises);
                 }
 
-                const userDocRef = doc(db, `artifacts/${appId}/users/${userId}/_metadata/app`);
+                // Reset metadata document
+                const userDocRef = doc(db, `artifacts/${traineeAppId}/users/${userId}/_metadata/app`);
                 await setDoc(userDocRef, { lastDailyCheckIn: null }, { merge: true });
 
+                // Explicitly clear local data and re-render
+                traineesData = [];
+                globalTrainingEvents = [];
+                platoonTasks = [];
+                
             } catch (error) {
                 console.error("Error resetting app data:", error);
+                // You could add a custom modal here to inform the user of the error.
             }
         };
 
         resetAppBtn.addEventListener('click', () => {
             showConfirmation(
                 "Reset All App Data",
-                "This will permanently delete all trainees, events, and tasks. This action cannot be undone.",
+                "Are you sure you want to reset the app? This will permanently delete all trainees, events, and tasks. This action cannot be undone.",
                 resetAllData
             );
         });
 
-        const updateDashboardTasks = () => {
-            const outstandingCount = platoonTasks.filter(task => !task.completed).length;
-            outstandingTasksCount.textContent = outstandingCount;
-        }
-
-        const renderTasksManagementList = () => {
-            const outstandingTasks = platoonTasks.filter(task => !task.completed);
-            const completedTasks = platoonTasks.filter(task => task.completed);
-            
-            outstandingTasks.sort((a, b) => {
-                const priorityOrder = { 'High': 1, 'Medium': 2, 'Low': 3 };
-                const dueDateA = a.dueDate ? new Date(a.dueDate).getTime() : Infinity;
-                const dueDateB = b.dueDate ? new Date(b.dueDate).getTime() : Infinity;
-                if (dueDateA !== dueDateB) return dueDateA - dueDateB;
-                return priorityOrder[a.priority] - priorityOrder[b.priority];
-            });
-            
-            const createTaskItemHTML = (task, isCompleted) => {
-                const priorityClass = {
-                    'High': 'bg-red-200 text-red-800',
-                    'Medium': 'bg-yellow-200 text-yellow-800',
-                    'Low': 'bg-gray-200 text-gray-800'
-                }[task.priority] || 'bg-gray-200 text-gray-800';
-                
-                return `
-                    <div class="flex items-center space-x-2 p-2 ${isCompleted ? 'bg-gray-200 text-gray-500' : 'bg-gray-50'} rounded-lg">
-                        <input type="checkbox" id="task-${task.id}" data-task-id="${task.id}" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 task-checkbox" ${isCompleted ? 'checked' : ''}>
-                        <div class="flex-1 ${isCompleted ? 'line-through' : ''}">
-                            <span class="px-2 py-0.5 text-xs font-semibold rounded-full ${priorityClass}">${task.priority}</span>
-                            <span class="ml-2">${task.text}</span>
-                            ${task.dueDate ? `<span class="ml-2 text-xs">Due: ${formatDate(task.dueDate)}</span>` : ''}
-                        </div>
-                        <button class="text-red-500 hover:text-red-700 delete-task-btn" data-task-id="${task.id}">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 pointer-events-none" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm6 0a1 1 0 112 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" />
-                            </svg>
-                        </button>
-                    </div>`;
-            };
-
-            tasksManagementListEl.innerHTML = outstandingTasks.map(task => createTaskItemHTML(task, false)).join('') || '<p class="text-center text-gray-500">No outstanding tasks.</p>';
-            completedTasksListEl.innerHTML = completedTasks.map(task => createTaskItemHTML(task, true)).join('');
-
-            document.querySelectorAll('.task-checkbox').forEach(checkbox => {
-                checkbox.addEventListener('change', async (e) => {
-                    const taskId = e.target.dataset.taskId;
-                    const isCompleted = e.target.checked;
-                    try {
-                        const taskDocRef = doc(db, `artifacts/${appId}/users/${userId}/tasks/${taskId}`);
-                        await setDoc(taskDocRef, { completed: isCompleted }, { merge: true });
-                    } catch (error) { console.error("Error updating task status:", error); }
-                });
-            });
-
-            document.querySelectorAll('.delete-task-btn').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const taskId = e.currentTarget.dataset.taskId;
-                    showConfirmation("Delete Task", "Are you sure you want to delete this task?", async () => {
-                        try {
-                            const taskDocRef = doc(db, `artifacts/${appId}/users/${userId}/tasks/${taskId}`);
-                            await deleteDoc(taskDocRef);
-                        } catch (error) { console.error("Error deleting task:", error); }
-                    });
-                });
-            });
-        };
-
     </script>
 </body>
 </html>
-" and want to add search functionality to the priority list.
-
