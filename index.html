@@ -10,6 +10,10 @@
             font-family: 'Inter', sans-serif;
             background-color: #f3f4f6;
             color: #1f2937;
+            transition: overflow 0.3s ease;
+        }
+        body.modal-open {
+            overflow: hidden;
         }
         .notification-banner {
             top: 0;
@@ -143,7 +147,7 @@
 
     <!-- Edit/Details Modal (Initially Hidden) -->
     <div id="traineeModal" class="modal fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900 bg-opacity-75 hidden">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl mx-auto p-6 md:p-8">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl mx-auto p-6 md:p-8 overflow-y-auto max-h-[90vh]">
             <div class="flex justify-between items-center pb-4 border-b">
                 <h3 id="modalName" class="text-2xl font-bold text-gray-900"></h3>
                 <button id="closeModalBtn" class="text-gray-400 hover:text-gray-600 font-bold text-2xl">&times;</button>
@@ -843,6 +847,7 @@
             modalNameEl.textContent = trainee.name;
             modalStatusEl.value = trainee.status;
             traineeLocationEl.value = trainee.location || '';
+            document.body.classList.add('modal-open');
 
             // Populate fitness data
             let fitnessData = { acftScore: '', runTime: '', rifleQual: '' };
@@ -1063,7 +1068,7 @@
                         </div>
                         <p class="text-xs text-gray-500">${formatTimestamp(timestamp)}</p>
                     </div>
-                    <button class="text-red-500 hover:text-red-700 ml-2 delete-note" data-timestamp="${timestamp}">
+                    <button class="text-red-500 hover:text-red-700 ml-2 delete-note" data-timestamp="${note.timestamp}">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm6 0a1 1 0 112 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" />
                         </svg>
@@ -1083,6 +1088,7 @@
         closeModalBtn.addEventListener('click', () => {
             traineeModal.classList.add('hidden');
             currentEditingTraineeId = null;
+            document.body.classList.remove('modal-open');
         });
 
         // Update Trainee details
@@ -1139,6 +1145,7 @@
                     updatedAt: new Date()
                 }, { merge: true });
                 traineeModal.classList.add('hidden');
+                document.body.classList.remove('modal-open');
             } catch (error) {
                 console.error("Error updating trainee:", error);
             }
@@ -1153,6 +1160,7 @@
                     await deleteDoc(traineeDocRef);
                     traineeModal.classList.add('hidden');
                     currentEditingTraineeId = null;
+                    document.body.classList.remove('modal-open');
                 } catch (error) {
                     console.error("Error deleting trainee:", error);
                 }
@@ -1212,16 +1220,19 @@
         // Bulk Add Trainees Logic
         bulkAddBtn.addEventListener('click', () => {
             bulkAddModal.classList.remove('hidden');
+            document.body.classList.add('modal-open');
         });
 
         closeBulkAddModalBtn.addEventListener('click', () => {
             bulkAddModal.classList.add('hidden');
             bulkTraineeInput.value = '';
+            document.body.classList.remove('modal-open');
         });
 
         bulkAddCancelBtn.addEventListener('click', () => {
             bulkAddModal.classList.add('hidden');
             bulkTraineeInput.value = '';
+            document.body.classList.remove('modal-open');
         });
 
         bulkAddSaveBtn.addEventListener('click', async () => {
@@ -1263,6 +1274,7 @@
                     }
                     bulkAddModal.classList.add('hidden');
                     bulkTraineeInput.value = '';
+                    document.body.classList.remove('modal-open');
                 } catch (error) {
                     console.error("Error adding trainees in bulk:", error);
                     // Handle error with a custom modal if needed
@@ -1273,11 +1285,13 @@
         // Manage Training Events Modal Logic
         manageTrainingBtn.addEventListener('click', () => {
             manageTrainingModal.classList.remove('hidden');
+            document.body.classList.add('modal-open');
             renderTrainingEventsManagementList();
         });
 
         closeManageTrainingBtn.addEventListener('click', () => {
             manageTrainingModal.classList.add('hidden');
+            document.body.classList.remove('modal-open');
         });
         
         // Add new training event
