@@ -665,7 +665,7 @@
             allPlatoonSelectors.forEach(selectEl => {
                 selectEl.value = selectedValue;
             });
-            updateAvailableTraineeCount(selectedValue);
+            updateDashboardCounts(selectedValue);
             renderTraineeList();
             renderTraineeEventUpdateList();
             renderTraineeEventViewList();
@@ -704,18 +704,43 @@
             }
         };
 
-        const updateAvailableTraineeCount = (platoon) => {
+        const updateDashboardCounts = (platoon) => {
             let filteredTrainees = traineesData;
             if (platoon !== 'All') {
                 filteredTrainees = traineesData.filter(trainee => trainee.platoon === platoon);
             }
             const totalCount = filteredTrainees.length;
             const availableCount = filteredTrainees.filter(trainee => trainee.status === 'Present').length;
+            const presentCount = filteredTrainees.filter(trainee => trainee.status === 'Present').length;
+            const sickCallCount = filteredTrainees.filter(trainee => trainee.status === 'Sick Call').length;
+            const profileCount = filteredTrainees.filter(trainee => {
+                try {
+                    const profile = JSON.parse(trainee.profile || '{}');
+                    return !!profile.restriction;
+                } catch(e) { return false; }
+            }).length;
+            const unqualifiedCount = filteredTrainees.filter(trainee => {
+                try {
+                    const fitness = JSON.parse(trainee.fitness || '{}');
+                    return fitness.rifleQual === 'Fail';
+                } catch(e) { return false; }
+            }).length;
+            const acftFailCount = filteredTrainees.filter(trainee => {
+                try {
+                    const fitness = JSON.parse(trainee.fitness || '{}');
+                    return fitness.acftScore === 'Fail';
+                } catch(e) { return false; }
+            }).length;
             const maleCount = filteredTrainees.filter(trainee => trainee.gender === 'Male').length;
             const femaleCount = filteredTrainees.filter(trainee => trainee.gender === 'Female').length;
 
             availableCountEl.textContent = `${availableCount} / ${totalCount} Trainees Available`;
-            rosterCountEl.textContent = traineesData.length;
+            rosterCountEl.textContent = traineesData.length; // Always show total roster count
+            presentCountEl.textContent = presentCount;
+            sickCallCountEl.textContent = sickCallCount;
+            profileCountEl.textContent = profileCount;
+            unqualifiedCountEl.textContent = unqualifiedCount;
+            acftFailCountEl.textContent = acftFailCount;
             maleCountEl.textContent = maleCount;
             femaleCountEl.textContent = femaleCount;
         };
@@ -998,13 +1023,7 @@
                 errorMessageEl.classList.add('hidden');
                 traineesData = [];
                 platoons.clear();
-                const statusCounts = { 'Present': 0, 'Sick Call': 0, 'On Leave': 0, 'Absent': 0, 'Other': 0 };
-                let profileCount = 0;
-                let unqualifiedCount = 0;
-                let acftFailCount = 0;
-                let maleCount = 0;
-                let femaleCount = 0;
-                let otherGenderCount = 0;
+                
 
                 if (snapshot.empty) {
                     traineeList.innerHTML = '<p class="text-center text-gray-500">No trainees added yet.</p>';
@@ -1013,43 +1032,11 @@
                         const trainee = { id: doc.id, ...doc.data() };
                         traineesData.push(trainee);
                         platoons.add(trainee.platoon);
-                        
-                        // Update dashboard counts
-                        if (statusCounts.hasOwnProperty(trainee.status)) {
-                             statusCounts[trainee.status]++;
-                        } else {
-                            statusCounts['Other']++;
-                        }
-                        
-                        const profile = JSON.parse(trainee.profile || '{}');
-                        if (profile.restriction) {
-                            profileCount++;
-                        }
-                        const fitness = JSON.parse(trainee.fitness || '{}');
-                        if (fitness.rifleQual === 'Fail') {
-                            unqualifiedCount++;
-                        }
-                        if (fitness.acftScore === 'Fail') {
-                            acftFailCount++;
-                        }
-
-                        if (trainee.gender === 'Male') maleCount++;
-                        else if (trainee.gender === 'Female') femaleCount++;
-                        else otherGenderCount++;
                     });
                 }
 
-                rosterCountEl.textContent = traineesData.length;
-                presentCountEl.textContent = statusCounts['Present'];
-                sickCallCountEl.textContent = statusCounts['Sick Call'];
-                profileCountEl.textContent = profileCount;
-                unqualifiedCountEl.textContent = unqualifiedCount;
-                acftFailCountEl.textContent = acftFailCount;
-                maleCountEl.textContent = maleCount;
-                femaleCountEl.textContent = femaleCount;
-
                 populatePlatoonFilters();
-                updateAvailableTraineeCount(dashboardPlatoonFilterEl.value);
+                updateDashboardCounts(dashboardPlatoonFilterEl.value);
                 renderTraineeList();
                 checkForUpcomingAppointments(traineesData);
                 updateDashboardNotesAndTasks();
@@ -1077,56 +1064,34 @@
         const populatePlatoonFilters = () => {
             const sortedPlatoons = Array.from(platoons).sort();
             
-            // Populate main roster filter
-            const currentMainFilter = platoonFilterEl.value;
-            platoonFilterEl.innerHTML = '<option value="All">All Platoons</option>';
-            sortedPlatoons.forEach(platoon => {
-                const option = document.createElement('option');
-                option.value = platoon;
-                option.textContent = platoon;
-                platoonFilterEl.appendChild(option);
-            });
-            platoonFilterEl.value = currentMainFilter;
-            
-            // Populate dashboard filter
-            const currentDashboardFilter = dashboardPlatoonFilterEl.value;
-            dashboardPlatoonFilterEl.innerHTML = '<option value="All">All Platoons</option>';
-            sortedPlatoons.forEach(platoon => {
-                const option = document.createElement('option');
-                option.value = platoon;
-                option.textContent = platoon;
-                dashboardPlatoonFilterEl.appendChild(option);
-            });
-            dashboardPlatoonFilterEl.value = currentDashboardFilter;
+            const dropdowns = [
+                dashboardPlatoonFilterEl,
+                platoonFilterEl,
+                updatePlatoonSelectorEl,
+                viewPlatoonSelectorEl
+            ];
 
-            // Populate update training platoon filter
-            const currentUpdateFilter = updatePlatoonSelectorEl.value;
-            updatePlatoonSelectorEl.innerHTML = '<option value="All">Entire Company Roster</option>';
-             if (sortedPlatoons.length > 0) {
-                 sortedPlatoons.forEach(platoon => {
-                    const option = document.createElement('option');
-                    option.value = platoon;
-                    option.textContent = platoon;
-                    updatePlatoonSelectorEl.appendChild(option);
-                 });
-                 // Select the first platoon by default
-                 if (currentUpdateFilter === 'All') {
-                    updatePlatoonSelectorEl.value = sortedPlatoons[0];
-                 } else {
-                    updatePlatoonSelectorEl.value = currentUpdateFilter;
-                 }
-            }
-            
-            // Populate view training platoon filter
-            const currentViewFilter = viewPlatoonSelectorEl.value;
-            viewPlatoonSelectorEl.innerHTML = '<option value="All">All Platoons</option>';
-            sortedPlatoons.forEach(platoon => {
-                const option = document.createElement('option');
-                option.value = platoon;
-                option.textContent = platoon;
-                viewPlatoonSelectorEl.appendChild(option);
+            dropdowns.forEach(dropdown => {
+                const currentSelection = dropdown.value;
+                let optionsHtml = '';
+                if (dropdown === updatePlatoonSelectorEl) {
+                    optionsHtml = '<option value="All">Entire Company Roster</option>';
+                } else {
+                    optionsHtml = '<option value="All">All Platoons</option>';
+                }
+                
+                sortedPlatoons.forEach(platoon => {
+                    optionsHtml += `<option value="${platoon}">${platoon}</option>`;
+                });
+                
+                dropdown.innerHTML = optionsHtml;
+                dropdown.value = currentSelection;
             });
-            viewPlatoonSelectorEl.value = currentViewFilter;
+
+            // Set a default value if the current selection is no longer valid
+            if (!sortedPlatoons.includes(dashboardPlatoonFilterEl.value) && dashboardPlatoonFilterEl.value !== 'All') {
+                dashboardPlatoonFilterEl.value = 'All';
+            }
         };
 
         const populateTrainingEventSelectors = () => {
@@ -1188,12 +1153,6 @@
             renderTraineeList();
         });
         
-        platoonFilterEl.addEventListener('change', () => {
-            currentStatusFilter = 'All'; // Reset dashboard filter when changing platoon
-            updateRosterHeader('All');
-            renderTraineeList();
-        });
-
         // Create a trainee card element
         const createTraineeCard = (trainee) => {
             const card = document.createElement('div');
