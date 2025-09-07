@@ -76,6 +76,10 @@
             <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Platoon Dashboard</h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 <!-- Status counts -->
+                <div class="p-3 bg-white rounded-lg shadow-md text-center cursor-pointer hover:bg-gray-100 transition-colors" data-filter="All">
+                    <p class="text-sm font-medium text-gray-600">Complete Roster</p>
+                    <p id="rosterCount" class="text-2xl font-bold text-gray-800 mt-1">0</p>
+                </div>
                 <div class="p-3 bg-white rounded-lg shadow-md text-center cursor-pointer hover:bg-gray-100 transition-colors" data-filter="Present">
                     <p class="text-sm font-medium text-gray-600">Present</p>
                     <p id="presentCount" class="text-2xl font-bold text-green-600 mt-1">0</p>
@@ -541,6 +545,7 @@
         const userIdDisplayEl = document.getElementById('userIdDisplay');
         const availableCountEl = document.getElementById('availableCount');
         const dashboardPlatoonFilterEl = document.getElementById('dashboardPlatoonFilter');
+        const rosterCountEl = document.getElementById('rosterCount');
         const presentCountEl = document.getElementById('presentCount');
         const sickCallCountEl = document.getElementById('sickCallCount');
         const profileCountEl = document.getElementById('profileCount');
@@ -687,6 +692,7 @@
             const femaleCount = filteredTrainees.filter(trainee => trainee.gender === 'Female').length;
 
             availableCountEl.textContent = `${availableCount} / ${totalCount} Trainees Available`;
+            rosterCountEl.textContent = traineesData.length;
             maleCountEl.textContent = maleCount;
             femaleCountEl.textContent = femaleCount;
         };
@@ -1010,6 +1016,7 @@
                     });
                 }
 
+                rosterCountEl.textContent = traineesData.length;
                 presentCountEl.textContent = statusCounts['Present'];
                 sickCallCountEl.textContent = statusCounts['Sick Call'];
                 profileCountEl.textContent = profileCount;
@@ -1171,19 +1178,48 @@
         // Create a trainee card element
         const createTraineeCard = (trainee) => {
             const card = document.createElement('div');
-            card.className = 'bg-gray-50 p-4 rounded-lg shadow-sm cursor-pointer hover:bg-gray-100 transition-colors flex justify-between items-center';
+            card.className = 'bg-gray-50 p-4 rounded-lg shadow-sm cursor-pointer hover:bg-gray-100 transition-colors';
             card.dataset.id = trainee.id;
+
+            // Gather all the necessary data
+            let profileData = {};
+            try { profileData = JSON.parse(trainee.profile || '{}'); } catch(e) { console.error("Failed to parse profile data for card:", e); }
+            
+            let fitnessData = {};
+            try { fitnessData = JSON.parse(trainee.fitness || '{}'); } catch(e) { console.error("Failed to parse fitness data for card:", e); }
+            
+            let appointments = [];
+            try { appointments = JSON.parse(trainee.appointments || '[]'); } catch(e) { console.error("Failed to parse appointments for card:", e); }
+            
+            let history = [];
+            try { history = JSON.parse(trainee.history || '[]'); } catch(e) { console.error("Failed to parse history for card:", e); }
+            
+            let customNotes = [];
+            try { customNotes = JSON.parse(trainee.customNotes || '[]'); } catch(e) { console.error("Failed to parse custom notes for card:", e); }
+
+            const sickCallCount = history.filter(item => item.details.includes('to \'Sick Call\'')).length;
+            const hasUpcomingAppointment = appointments.some(app => new Date(app.date) >= new Date());
+            const hasTaggedNote = customNotes.some(note => note.text.toLowerCase().includes(`@${trainee.name.toLowerCase()}`));
+
             card.innerHTML = `
-                <div>
+                <div class="flex items-center justify-between mb-2">
                     <h4 class="text-xl font-semibold text-gray-900">${trainee.rank || ''} ${trainee.name}</h4>
-                    <p class="text-sm text-gray-600">Platoon: ${trainee.platoon} | Gender: ${trainee.gender}</p>
+                    <span class="px-3 py-1 text-sm font-medium rounded-full ${
+                        trainee.status === 'Present' ? 'bg-green-100 text-green-800' :
+                        trainee.status === 'Sick Call' ? 'bg-yellow-100 text-yellow-800' :
+                        trainee.status === 'On Leave' ? 'bg-blue-100 text-blue-800' :
+                        'bg-red-100 text-red-800'
+                    }">${trainee.status}</span>
                 </div>
-                <span class="px-3 py-1 text-sm font-medium rounded-full ${
-                    trainee.status === 'Present' ? 'bg-green-100 text-green-800' :
-                    trainee.status === 'Sick Call' ? 'bg-yellow-100 text-yellow-800' :
-                    trainee.status === 'On Leave' ? 'bg-blue-100 text-blue-800' :
-                    'bg-red-100 text-red-800'
-                }">${trainee.status}</span>
+                <p class="text-sm text-gray-600 mb-2">Platoon: ${trainee.platoon} | Gender: ${trainee.gender}</p>
+                <div class="flex flex-wrap items-center gap-2 text-xs">
+                    ${profileData.restriction ? `<span title="${profileData.restriction}" class="bg-red-100 text-red-800 px-2 py-1 rounded-full font-medium">PROFILE</span>` : ''}
+                    ${fitnessData.acftScore === 'Fail' ? `<span class="bg-red-100 text-red-800 px-2 py-1 rounded-full font-medium">ACFT FAIL</span>` : ''}
+                    ${fitnessData.rifleQual === 'Fail' ? `<span class="bg-red-100 text-red-800 px-2 py-1 rounded-full font-medium">RIFLE FAIL</span>` : ''}
+                    ${hasUpcomingAppointment ? `<span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full font-medium">APPT</span>` : ''}
+                    ${sickCallCount > 0 ? `<span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full font-medium">${sickCallCount}x SICK CALL</span>` : ''}
+                    ${hasTaggedNote ? `<span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-full font-medium">TAGGED</span>` : ''}
+                </div>
             `;
             card.addEventListener('click', () => showTraineeModal(trainee));
             return card;
@@ -1531,7 +1567,6 @@
             const newLocation = traineeLocationEl.value.trim();
             const newRank = modalRankEl.value.trim();
             const newGender = modalGenderEl.value;
-            const newNotes = modalNotesEl.value;
             
             const profile = {
                 restriction: profileRestrictionEl.value.trim(),
@@ -1567,7 +1602,6 @@
                 await setDoc(traineeDocRef, {
                     status: newStatus,
                     location: newLocation,
-                    notes: newNotes,
                     rank: newRank,
                     gender: newGender,
                     history: JSON.stringify(history),
@@ -1721,7 +1755,7 @@
             }
         });
 
-        // Manage Training Events Modal Logic
+        // Manage Events Modal (Consolidated)
         openEventsModalBtn.addEventListener('click', () => {
             manageEventsModal.classList.remove('hidden');
             document.body.classList.add('modal-open');
@@ -2114,12 +2148,10 @@
                 await setDoc(userDocRef, { lastDailyCheckIn: null }, { merge: true });
 
                 // Explicitly clear local data and re-render
-                platoonTasks = [];
                 traineesData = [];
                 globalTrainingEvents = [];
-                renderTasksManagementList();
-                updateDashboardTasks();
-
+                platoonTasks = [];
+                
             } catch (error) {
                 console.error("Error resetting app data:", error);
                 // You could add a custom modal here to inform the user of the error.
