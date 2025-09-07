@@ -758,23 +758,31 @@
                 
                 onAuthStateChanged(auth, async (user) => {
                     if (user) {
+                        // This block runs when authentication is successful (either initially or after sign-in).
                         userId = user.uid;
                         authStatusEl.textContent = 'Status: Authenticated';
                         userIdDisplayEl.textContent = `User ID: ${userId}`;
+                        errorMessageEl.classList.add('hidden');
+                        loadingStatusEl.textContent = 'Loading trainees...';
                         setupRealtimeListeners();
                     } else {
+                        // This block runs on initial load before sign-in attempt.
                         try {
                             if (initialAuthToken) {
                                 await signInWithCustomToken(auth, initialAuthToken);
                             } else {
                                 await signInAnonymously(auth);
                             }
+                            // After successful sign-in, onAuthStateChanged will be re-triggered, and the `if (user)` block will run.
                         } catch (error) {
-                            console.error("Authentication failed:", error);
+                            // This block runs ONLY if BOTH custom token AND anonymous sign-in fail.
+                            console.error("Firebase Authentication Failed:", error);
                             authStatusEl.textContent = 'Status: Authentication Failed';
-                            userId = `temp-user-${crypto.randomUUID()}`;
-                            userIdDisplayEl.textContent = `Using temporary ID: ${userId}`;
-                            setupRealtimeListeners(); // Still setup listeners with temp ID if auth fails
+                            userIdDisplayEl.textContent = 'Could not connect to the service. Please check your connection and refresh.';
+                            loadingStatusEl.style.display = 'none';
+                            errorMessageEl.textContent = 'Application cannot start without a valid user session.';
+                            errorMessageEl.classList.remove('hidden');
+                            // DO NOT call setupRealtimeListeners() here, as there's no authenticated user.
                         }
                     }
                 });
@@ -1768,5 +1776,5 @@
     </script>
 </body>
 </html>
-
+" and want to add search functionality to the priority list.
 
