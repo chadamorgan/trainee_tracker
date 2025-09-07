@@ -105,6 +105,15 @@
                     <p class="text-sm font-medium text-gray-600">Platoon Tasks</p>
                     <p id="outstandingTasksCount" class="text-2xl font-bold text-purple-600 mt-1">0</p>
                 </div>
+                <!-- Gender Breakdown Cards -->
+                <div class="p-3 bg-white rounded-lg shadow-md text-center cursor-pointer hover:bg-gray-100 transition-colors" data-filter="Male">
+                    <p class="text-sm font-medium text-gray-600">Males</p>
+                    <p id="maleCount" class="text-2xl font-bold text-indigo-600 mt-1">0</p>
+                </div>
+                <div class="p-3 bg-white rounded-lg shadow-md text-center cursor-pointer hover:bg-gray-100 transition-colors" data-filter="Female">
+                    <p class="text-sm font-medium text-gray-600">Females</p>
+                    <p id="femaleCount" class="text-2xl font-bold text-pink-600 mt-1">0</p>
+                </div>
             </div>
             <div class="mt-4">
                 <h4 class="text-md font-semibold text-gray-800">Upcoming Appointments:</h4>
@@ -128,9 +137,23 @@
                     <label for="traineeName" class="block text-sm font-medium text-gray-700">Trainee Name</label>
                     <input type="text" id="traineeName" name="name" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                 </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="platoonName" class="block text-sm font-medium text-gray-700">Platoon/Company</label>
+                        <input type="text" id="platoonName" name="platoon" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label for="traineeRank" class="block text-sm font-medium text-gray-700">Rank</label>
+                        <input type="text" id="traineeRank" name="rank" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+                </div>
                 <div>
-                    <label for="platoonName" class="block text-sm font-medium text-gray-700">Platoon/Company</label>
-                    <input type="text" id="platoonName" name="platoon" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <label for="traineeGender" class="block text-sm font-medium text-gray-700">Gender</label>
+                    <select id="traineeGender" name="gender" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
                 </div>
                 <div class="flex justify-end space-x-2">
                     <button type="button" id="cancelAddBtn" class="px-4 py-2 text-sm font-semibold rounded-lg text-gray-700 bg-gray-200 hover:bg-gray-300">Cancel</button>
@@ -184,6 +207,22 @@
                     <div class="space-y-2">
                         <label for="traineeLocation" class="block text-sm font-medium text-gray-700">Current Location:</label>
                         <input type="text" id="traineeLocation" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    </div>
+                </div>
+
+                <!-- Personal Info -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <label for="modalRank" class="block text-sm font-medium text-gray-700">Rank:</label>
+                        <input type="text" id="modalRank" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    </div>
+                    <div class="space-y-2">
+                        <label for="modalGender" class="block text-sm font-medium text-gray-700">Gender:</label>
+                        <select id="modalGender" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                             <option value="Male">Male</option>
+                             <option value="Female">Female</option>
+                             <option value="Other">Other</option>
+                        </select>
                     </div>
                 </div>
 
@@ -282,9 +321,17 @@
                             <label for="newAppointmentDate" class="block text-sm font-medium text-gray-700">Date:</label>
                             <input type="date" id="newAppointmentDate" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                         </div>
+                        <div class="w-1/2">
+                            <label for="newAppointmentTime" class="block text-sm font-medium text-gray-700">Time:</label>
+                            <input type="time" id="newAppointmentTime" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
                         <div class="flex-1">
-                            <label for="newAppointmentDesc" class="block text-sm font-medium text-gray-700">Description:</label>
-                            <input type="text" id="newAppointmentDesc" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            <label for="newAppointmentLocation" class="block text-sm font-medium text-gray-700">Location:</label>
+                            <input type="text" id="newAppointmentLocation" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                        <div class="flex-1">
+                             <label for="newAppointmentDesc" class="block text-sm font-medium text-gray-700">Description:</label>
+                             <input type="text" id="newAppointmentDesc" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                         </div>
                         <button id="addAppointmentBtn" class="px-4 py-2 text-sm font-semibold rounded-lg text-white bg-blue-600 hover:bg-blue-700 whitespace-nowrap">Add</button>
                     </div>
@@ -293,7 +340,7 @@
                 <!-- History Notes -->
                 <div class="space-y-2">
                     <h4 class="text-lg font-bold text-gray-800">History Notes</h4>
-                    <textarea id="modalNotes" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
+                    <textarea id="modalNotes" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" readonly></textarea>
                 </div>
                 
             </div>
@@ -502,6 +549,8 @@
         const upcomingAppointmentsListEl = document.getElementById('upcomingAppointmentsList');
         const priorityListEl = document.getElementById('priorityList');
         const dashboardCards = document.querySelectorAll('[data-filter]');
+        const maleCountEl = document.getElementById('maleCount');
+        const femaleCountEl = document.getElementById('femaleCount');
 
         const addTraineeBtn = document.getElementById('addTraineeBtn');
         const bulkAddBtn = document.getElementById('bulkAddBtn');
@@ -519,6 +568,8 @@
         const modalNameEl = document.getElementById('modalName');
         const modalStatusEl = document.getElementById('modalStatus');
         const traineeLocationEl = document.getElementById('traineeLocation');
+        const modalRankEl = document.getElementById('modalRank');
+        const modalGenderEl = document.getElementById('modalGender');
         const acftScoreEl = document.getElementById('acftScore');
         const runTimeEl = document.getElementById('runTime');
         const rifleQualEl = document.getElementById('rifleQual');
@@ -530,6 +581,8 @@
         const profileEndDateEl = document.getElementById('profileEndDate');
         const appointmentsListEl = document.getElementById('appointmentsList');
         const newAppointmentDateEl = document.getElementById('newAppointmentDate');
+        const newAppointmentTimeEl = document.getElementById('newAppointmentTime');
+        const newAppointmentLocationEl = document.getElementById('newAppointmentLocation');
         const newAppointmentDescEl = document.getElementById('newAppointmentDesc');
         const addAppointmentBtn = document.getElementById('addAppointmentBtn');
         const modalNotesEl = document.getElementById('modalNotes');
@@ -598,12 +651,12 @@
         // Event listeners for dashboard cards
         dashboardCards.forEach(card => {
             card.addEventListener('click', () => {
-                const status = card.dataset.filter;
-                currentStatusFilter = status;
+                const filter = card.dataset.filter;
+                currentStatusFilter = filter;
                 traineeSearchEl.value = ''; // Reset search bar
                 platoonFilterEl.value = 'All'; // Reset platoon filter
                 renderTraineeList();
-                updateRosterHeader(status);
+                updateRosterHeader(filter);
             });
         });
 
@@ -616,6 +669,8 @@
                  rosterHeaderEl.textContent = 'Unqualified Trainees';
             } else if (filter === 'ACFT Fail') {
                 rosterHeaderEl.textContent = 'ACFT Failures';
+            } else if (filter === 'Male' || filter === 'Female' || filter === 'Other') {
+                rosterHeaderEl.textContent = `${filter} Trainees`;
             } else {
                 rosterHeaderEl.textContent = `Trainees with Status: ${filter}`;
             }
@@ -628,7 +683,12 @@
             }
             const totalCount = filteredTrainees.length;
             const availableCount = filteredTrainees.filter(trainee => trainee.status === 'Present').length;
+            const maleCount = filteredTrainees.filter(trainee => trainee.gender === 'Male').length;
+            const femaleCount = filteredTrainees.filter(trainee => trainee.gender === 'Female').length;
+
             availableCountEl.textContent = `${availableCount} / ${totalCount} Trainees Available`;
+            maleCountEl.textContent = maleCount;
+            femaleCountEl.textContent = femaleCount;
         };
 
         // Function to convert Firestore timestamp or ISO string to a readable string
@@ -649,13 +709,6 @@
             }
             return new Date().toLocaleString();
         };
-
-        const isToday = (someDate) => {
-            const today = new Date();
-            return someDate.getDate() == today.getDate() &&
-                someDate.getMonth() == today.getMonth() &&
-                someDate.getFullYear() == today.getFullYear();
-        }
 
         // Custom confirmation modal logic
         const showConfirmation = (title, message, onConfirm) => {
@@ -744,7 +797,8 @@
                         name: trainee.name, 
                         priority: note.priority, 
                         text: note.text, 
-                        timestamp: note.timestamp 
+                        timestamp: note.timestamp,
+                        id: note.timestamp
                     }));
                 } catch(e) {
                     console.error("Failed to parse notes for dashboard:", e);
@@ -1060,6 +1114,8 @@
                     } else if (currentStatusFilter === 'ACFT Fail') {
                         const fitness = JSON.parse(trainee.fitness || '{}');
                         statusMatch = fitness.acftScore === 'Fail';
+                    } else if (currentStatusFilter === 'Male' || currentStatusFilter === 'Female' || currentStatusFilter === 'Other') {
+                        statusMatch = trainee.gender === currentStatusFilter;
                     } else {
                         statusMatch = trainee.status === currentStatusFilter;
                     }
@@ -1109,8 +1165,8 @@
             card.dataset.id = trainee.id;
             card.innerHTML = `
                 <div>
-                    <h4 class="text-xl font-semibold text-gray-900">${trainee.name}</h4>
-                    <p class="text-sm text-gray-600">Platoon: ${trainee.platoon}</p>
+                    <h4 class="text-xl font-semibold text-gray-900">${trainee.rank || ''} ${trainee.name}</h4>
+                    <p class="text-sm text-gray-600">Platoon: ${trainee.platoon} | Gender: ${trainee.gender}</p>
                 </div>
                 <span class="px-3 py-1 text-sm font-medium rounded-full ${
                     trainee.status === 'Present' ? 'bg-green-100 text-green-800' :
@@ -1139,13 +1195,17 @@
             const formData = new FormData(traineeForm);
             const name = formData.get('name').trim();
             const platoon = formData.get('platoon').trim();
-            if (!name || !platoon) return;
+            const rank = formData.get('rank').trim();
+            const gender = formData.get('gender').trim();
+            if (!name || !platoon || !rank || !gender) return;
 
             try {
                 const traineesColRef = collection(db, `artifacts/${traineeAppId}/users/${userId}/trainees`);
                 const newTraineeData = {
                     name,
                     platoon,
+                    rank,
+                    gender,
                     status: 'Present',
                     location: '',
                     history: JSON.stringify([{
@@ -1174,6 +1234,8 @@
             modalNameEl.textContent = trainee.name;
             modalStatusEl.value = trainee.status;
             traineeLocationEl.value = trainee.location || '';
+            modalRankEl.value = trainee.rank || '';
+            modalGenderEl.value = trainee.gender || 'Other';
             document.body.classList.add('modal-open');
 
             // Populate fitness data
@@ -1294,13 +1356,36 @@
                 console.error("Failed to parse appointments:", e);
             }
             appointmentsListEl.innerHTML = appointments.map(app => `
-                <div class="flex items-center space-x-2 p-2 bg-gray-100 rounded-lg">
+                <div class="p-2 bg-gray-100 rounded-lg text-sm flex justify-between items-start">
                     <div class="flex-1">
-                        <span class="font-semibold">${formatDate(app.date)}:</span>
+                        <span class="font-semibold">${formatDate(app.date)} @ ${app.time} - ${app.location}:</span>
                         <span>${app.description}</span>
                     </div>
+                    <button class="text-red-500 hover:text-red-700 ml-2 delete-appointment-btn" data-timestamp="${app.date + app.time + app.location}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm6 0a1 1 0 112 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
                 </div>
             `).join('');
+
+            appointmentsListEl.querySelectorAll('.delete-appointment-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const timestamp = e.currentTarget.dataset.timestamp;
+                    showConfirmation("Delete Appointment", "Are you sure you want to delete this appointment?", async () => {
+                        const currentTrainee = traineesData.find(t => t.id === currentEditingTraineeId);
+                        let appointments = JSON.parse(currentTrainee.appointments || '[]');
+                        appointments = appointments.filter(app => app.date + app.time + app.location !== timestamp);
+                        try {
+                            const traineeDocRef = doc(db, `artifacts/${traineeAppId}/users/${userId}/trainees/${currentEditingTraineeId}`);
+                            await setDoc(traineeDocRef, { appointments: JSON.stringify(appointments) }, { merge: true });
+                        } catch (error) {
+                            console.error("Error deleting appointment:", error);
+                        }
+                    });
+                });
+            });
 
             // Populate history notes
             let notesString = '';
@@ -1321,23 +1406,32 @@
         // Add a new appointment to the modal's in-memory data
         addAppointmentBtn.addEventListener('click', () => {
             const date = newAppointmentDateEl.value;
+            const time = newAppointmentTimeEl.value;
+            const location = newAppointmentLocationEl.value.trim();
             const desc = newAppointmentDescEl.value.trim();
-            if (!date || !desc) return;
+            if (!date || !time || !location || !desc) return;
             
             const currentTrainee = traineesData.find(t => t.id === currentEditingTraineeId);
             let appointments = JSON.parse(currentTrainee.appointments || '[]');
-            appointments.push({ date, description: desc });
+            appointments.push({ date, time, location, description: desc });
             
             appointmentsListEl.innerHTML += `
-                <div class="flex items-center space-x-2 p-2 bg-gray-100 rounded-lg">
+                <div class="p-2 bg-gray-100 rounded-lg text-sm flex justify-between items-start">
                     <div class="flex-1">
-                        <span class="font-semibold">${formatDate(date)}:</span>
+                        <span class="font-semibold">${formatDate(date)} @ ${time} - ${location}:</span>
                         <span>${desc}</span>
                     </div>
+                    <button class="text-red-500 hover:text-red-700 ml-2 delete-appointment-btn" data-timestamp="${date + time + location}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm6 0a1 1 0 112 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
                 </div>
             `;
             
             newAppointmentDateEl.value = '';
+            newAppointmentTimeEl.value = '';
+            newAppointmentLocationEl.value = '';
             newAppointmentDescEl.value = '';
             
             // Update the in-memory trainee data to be saved later
@@ -1425,6 +1519,8 @@
             const currentTrainee = traineesData.find(t => t.id === currentEditingTraineeId);
             const newStatus = modalStatusEl.value;
             const newLocation = traineeLocationEl.value.trim();
+            const newRank = modalRankEl.value.trim();
+            const newGender = modalGenderEl.value;
             const newNotes = modalNotesEl.value;
             
             const profile = {
@@ -1462,6 +1558,8 @@
                     status: newStatus,
                     location: newLocation,
                     notes: newNotes,
+                    rank: newRank,
+                    gender: newGender,
                     history: JSON.stringify(history),
                     profile: JSON.stringify(profile),
                     appointments: currentTrainee.appointments,
@@ -1585,6 +1683,8 @@
                             platoon: trainee.platoon,
                             status: 'Present',
                             location: '',
+                            rank: '',
+                            gender: 'Other',
                             history: JSON.stringify([{
                                 type: 'Added',
                                 details: 'Trainee added via bulk upload.',
@@ -1725,7 +1825,7 @@
             const traineeCheckboxes = traineeEventUpdateListEl.querySelectorAll('input[type="checkbox"]');
             
             for (const checkbox of traineeCheckboxes) {
-                const traineeId = checkbox.dataset.traineeId;
+                const traineeId = checkbox.dataset.trainee-id;
                 const trainee = traineesData.find(t => t.id === traineeId);
                 if (!trainee) continue;
                 
@@ -1845,6 +1945,16 @@
             }
         });
 
+        const updateDashboardTasks = () => {
+            let outstandingCount = 0;
+            platoonTasks.forEach(task => {
+                if (!task.completed) {
+                    outstandingCount++;
+                }
+            });
+            outstandingTasksCount.textContent = outstandingCount;
+        }
+
         const renderTasksManagementList = () => {
             // Filter and sort tasks
             const outstandingTasks = platoonTasks.filter(task => !task.completed);
@@ -1912,7 +2022,7 @@
                 });
             }
 
-            // Add event listeners for new checkboxes
+            // Add event listeners for outstanding tasks checkboxes
             tasksManagementListEl.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
                 checkbox.addEventListener('change', async (e) => {
                     const taskId = e.target.dataset.taskId;
@@ -1926,6 +2036,7 @@
                 });
             });
 
+            // Add event listeners for completed tasks checkboxes
             completedTasksListEl.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
                 checkbox.addEventListener('change', async (e) => {
                     const taskId = e.target.dataset.taskId;
