@@ -70,23 +70,23 @@
             <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Platoon Dashboard</h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 <!-- Status counts -->
-                <div class="p-3 bg-white rounded-lg shadow-md text-center">
+                <div class="p-3 bg-white rounded-lg shadow-md text-center cursor-pointer hover:bg-gray-100 transition-colors" data-filter="Present">
                     <p class="text-sm font-medium text-gray-600">Present</p>
                     <p id="presentCount" class="text-2xl font-bold text-green-600 mt-1">0</p>
                 </div>
-                <div class="p-3 bg-white rounded-lg shadow-md text-center">
+                <div class="p-3 bg-white rounded-lg shadow-md text-center cursor-pointer hover:bg-gray-100 transition-colors" data-filter="Sick Call">
                     <p class="text-sm font-medium text-gray-600">Sick Call</p>
                     <p id="sickCallCount" class="text-2xl font-bold text-yellow-600 mt-1">0</p>
                 </div>
-                <div class="p-3 bg-white rounded-lg shadow-md text-center">
+                <div class="p-3 bg-white rounded-lg shadow-md text-center cursor-pointer hover:bg-gray-100 transition-colors" data-filter="Profile">
                     <p class="text-sm font-medium text-gray-600">Profiles</p>
                     <p id="profileCount" class="text-2xl font-bold text-red-600 mt-1">0</p>
                 </div>
-                <div class="p-3 bg-white rounded-lg shadow-md text-center">
+                <div class="p-3 bg-white rounded-lg shadow-md text-center cursor-pointer hover:bg-gray-100 transition-colors" data-filter="Unqualified">
                     <p class="text-sm font-medium text-gray-600">Unqualified</p>
                     <p id="unqualifiedCount" class="text-2xl font-bold text-purple-600 mt-1">0</p>
                 </div>
-                <div class="p-3 bg-white rounded-lg shadow-md text-center">
+                <div class="p-3 bg-white rounded-lg shadow-md text-center cursor-pointer hover:bg-gray-100 transition-colors" data-filter="ACFT Fail">
                     <p class="text-sm font-medium text-gray-600">ACFT Fail</p>
                     <p id="acftFailCount" class="text-2xl font-bold text-red-600 mt-1">0</p>
                 </div>
@@ -127,7 +127,7 @@
         <!-- Trainee List and Filter -->
         <div class="mb-6">
             <div class="flex flex-col sm:flex-row justify-between items-center mb-4 space-y-4 sm:space-y-0">
-                <h2 class="text-2xl font-bold text-gray-900">Trainee Roster</h2>
+                <h2 class="text-2xl font-bold text-gray-900" id="rosterHeader">Trainee Roster</h2>
                 <div class="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
                     <input type="text" id="traineeSearch" placeholder="Search by name..." class="w-full sm:w-auto px-4 py-2 rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                     <select id="platoonFilter" class="w-full sm:w-auto px-4 py-2 rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
@@ -147,7 +147,7 @@
 
     <!-- Edit/Details Modal -->
     <div id="traineeModal" class="modal fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900 bg-opacity-75 hidden">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl mx-auto p-6 md:p-8 flex flex-col max-h-[90vh]">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl mx-auto p-6 md:p-8 flex flex-col h-[90vh]">
             <div class="flex justify-between items-center pb-4 border-b flex-shrink-0">
                 <h3 id="modalName" class="text-2xl font-bold text-gray-900"></h3>
                 <button id="closeModalBtn" class="text-gray-400 hover:text-gray-600 font-bold text-2xl">&times;</button>
@@ -394,6 +394,7 @@
         const acftFailCountEl = document.getElementById('acftFailCount');
         const upcomingAppointmentsListEl = document.getElementById('upcomingAppointmentsList');
         const highPriorityIssuesListEl = document.getElementById('highPriorityIssuesList');
+        const dashboardCards = document.querySelectorAll('[data-filter]');
 
         const addTraineeBtn = document.getElementById('addTraineeBtn');
         const addTraineeFormContainer = document.getElementById('addTraineeFormContainer');
@@ -402,6 +403,7 @@
         const traineeList = document.getElementById('traineeList');
         const loadingStatusEl = document.getElementById('loadingStatus');
         const errorMessageEl = document.getElementById('errorMessage');
+        const rosterHeaderEl = document.getElementById('rosterHeader');
 
         const traineeModal = document.getElementById('traineeModal');
         const closeModalBtn = document.getElementById('closeModalBtn');
@@ -463,6 +465,34 @@
         
         let currentEditingTraineeId = null;
         let platoons = new Set();
+        let currentStatusFilter = 'All';
+
+        // Event listeners for dashboard cards
+        dashboardCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const status = card.dataset.filter;
+                currentStatusFilter = status;
+                traineeSearchEl.value = ''; // Reset search bar
+                platoonFilterEl.value = 'All'; // Reset platoon filter
+                renderTraineeList();
+                updateRosterHeader(status);
+            });
+        });
+
+        const updateRosterHeader = (filter) => {
+            if (filter === 'All') {
+                rosterHeaderEl.textContent = 'Trainee Roster';
+            } else if (filter === 'Profile') {
+                rosterHeaderEl.textContent = 'Trainees on Profile';
+            } else if (filter === 'Unqualified') {
+                 rosterHeaderEl.textContent = 'Unqualified Trainees';
+            } else if (filter === 'ACFT Fail') {
+                rosterHeaderEl.textContent = 'ACFT Failures';
+            } else {
+                rosterHeaderEl.textContent = `Trainees with Status: ${filter}`;
+            }
+        };
+
 
         // Function to convert Firestore timestamp or ISO string to a readable string
         const formatDate = (date) => {
@@ -753,7 +783,23 @@
             let filteredTrainees = traineesData.filter(trainee => {
                 const nameMatch = trainee.name.toLowerCase().includes(searchTerm);
                 const platoonMatch = selectedPlatoon === 'All' || trainee.platoon === selectedPlatoon;
-                return nameMatch && platoonMatch;
+                
+                let statusMatch = true;
+                if (currentStatusFilter !== 'All') {
+                    if (currentStatusFilter === 'Profile') {
+                        const profile = JSON.parse(trainee.profile || '{}');
+                        statusMatch = !!profile.restriction;
+                    } else if (currentStatusFilter === 'Unqualified') {
+                        const fitness = JSON.parse(trainee.fitness || '{}');
+                        statusMatch = fitness.rifleQual === 'Fail';
+                    } else if (currentStatusFilter === 'ACFT Fail') {
+                        const fitness = JSON.parse(trainee.fitness || '{}');
+                        statusMatch = fitness.acftScore === 'Fail';
+                    } else {
+                        statusMatch = trainee.status === currentStatusFilter;
+                    }
+                }
+                return nameMatch && platoonMatch && statusMatch;
             });
             
             // Sort by platoon, then by name
@@ -775,8 +821,17 @@
             }
         };
         
-        traineeSearchEl.addEventListener('input', renderTraineeList);
-        platoonFilterEl.addEventListener('change', renderTraineeList);
+        traineeSearchEl.addEventListener('input', () => {
+            currentStatusFilter = 'All'; // Reset dashboard filter when searching
+            updateRosterHeader('All');
+            renderTraineeList();
+        });
+        
+        platoonFilterEl.addEventListener('change', () => {
+            currentStatusFilter = 'All'; // Reset dashboard filter when changing platoon
+            updateRosterHeader('All');
+            renderTraineeList();
+        });
 
         // Create a trainee card element
         const createTraineeCard = (trainee) => {
@@ -1069,7 +1124,7 @@
                             }">${priority}</span>
                             <span class="ml-2 text-gray-700">${text}</span>
                         </div>
-                        <p class="text-xs text-gray-500">${formatTimestamp(timestamp)}</p>
+                        <p class="text-xs text-gray-500">${formatTimestamp(note.timestamp)}</p>
                     </div>
                     <button class="text-red-500 hover:text-red-700 ml-2 delete-note" data-timestamp="${note.timestamp}">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
