@@ -559,8 +559,18 @@
 
         // --- GLOBAL VARIABLES & CONSTANTS ---
         // These variables are provided by the environment and are crucial for Firebase integration.
-        // DO NOT HARDCODE VALUES HERE.
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        // A fallback configuration is provided for local development to prevent the app from crashing if environment variables aren't set.
+        // NOTE: The app will display data-loading errors when using this default config as it does not point to a real database.
+        const firebaseConfig = typeof __firebase_config !== 'undefined' 
+            ? JSON.parse(__firebase_config) 
+            : {
+                apiKey: "dummy-key",
+                authDomain: "dummy-project.firebaseapp.com",
+                projectId: "dummy-project",
+                storageBucket: "dummy-project.appspot.com",
+                messagingSenderId: "1234567890",
+                appId: "1:1234567890:web:dummy-app-id"
+            };
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
@@ -741,13 +751,6 @@
         
         // --- FIREBASE & AUTH INITIALIZATION ---
         window.onload = function() {
-            if (!firebaseConfig) {
-                console.error("Firebase config is missing. App cannot start.");
-                authStatusEl.textContent = 'Status: Error';
-                userIdDisplayEl.textContent = 'Firebase configuration not found.';
-                loadingStatusEl.textContent = 'App initialization failed.';
-                return;
-            }
             try {
                 const app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
@@ -780,6 +783,7 @@
                 console.error("Firebase initialization failed:", error);
                 authStatusEl.textContent = 'Status: Error';
                 userIdDisplayEl.textContent = 'Could not initialize Firebase.';
+                loadingStatusEl.textContent = 'App initialization failed. Check console for details.';
             }
         };
 
@@ -1764,4 +1768,5 @@
     </script>
 </body>
 </html>
+
 
