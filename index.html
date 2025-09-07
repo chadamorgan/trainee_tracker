@@ -114,7 +114,7 @@
             </div>
             <div class="mt-4">
                 <h4 class="text-md font-semibold text-gray-800">Priority List:</h4>
-                <ul id="highPriorityIssuesList" class="mt-2 space-y-1 text-sm text-gray-600">
+                <ul id="priorityList" class="mt-2 space-y-1 text-sm text-gray-600">
                     <!-- High priority notes will be populated here -->
                 </ul>
             </div>
@@ -450,6 +450,12 @@
                         <!-- Tasks will be populated here -->
                     </div>
                 </div>
+                 <div class="space-y-2">
+                    <h4 class="text-lg font-bold text-gray-800">Completed Tasks</h4>
+                    <div id="completedTasksList" class="space-y-2 max-h-64 overflow-y-auto">
+                        <!-- Completed tasks will be populated here -->
+                    </div>
+                </div>
             </div>
             <div class="flex justify-end pt-4 border-t flex-shrink-0">
                 <button id="saveTasksBtn" class="px-4 py-2 text-sm font-semibold rounded-lg text-white bg-green-600 hover:bg-green-700">Done</button>
@@ -494,8 +500,7 @@
         const unqualifiedCountEl = document.getElementById('unqualifiedCount');
         const acftFailCountEl = document.getElementById('acftFailCount');
         const upcomingAppointmentsListEl = document.getElementById('upcomingAppointmentsList');
-        const highPriorityIssuesListEl = document.getElementById('highPriorityIssuesList');
-        const platoonTasksListEl = document.getElementById('platoonTasksList');
+        const priorityListEl = document.getElementById('priorityList');
         const dashboardCards = document.querySelectorAll('[data-filter]');
 
         const addTraineeBtn = document.getElementById('addTraineeBtn');
@@ -583,7 +588,8 @@
         const newTaskDueDateEl = document.getElementById('newTaskDueDate');
         const addTaskBtn = document.getElementById('addTaskBtn');
         const tasksManagementListEl = document.getElementById('tasksManagementList');
-        const saveTasksBtn = document.getElementById('saveTasksBtn');
+        const completedTasksListEl = document.getElementById('completedTasksList');
+        const outstandingTasksCount = document.getElementById('outstandingTasksCount');
 
         let currentEditingTraineeId = null;
         let platoons = new Set();
@@ -726,67 +732,87 @@
 
         const priorityOrder = { 'High': 1, 'Medium': 2, 'Low': 3 };
 
-        const updateDashboardNotes = (trainees) => {
-            const allNotes = [];
+        const updateDashboardNotesAndTasks = () => {
+            const allItems = [];
 
-            trainees.forEach(trainee => {
+            // Add custom notes
+            traineesData.forEach(trainee => {
                 try {
                     const customNotes = JSON.parse(trainee.customNotes || '[]');
-                    customNotes.forEach(note => allNotes.push({ name: trainee.name, note: note }));
+                    customNotes.forEach(note => allItems.push({ 
+                        type: 'Note', 
+                        name: trainee.name, 
+                        priority: note.priority, 
+                        text: note.text, 
+                        timestamp: note.timestamp 
+                    }));
                 } catch(e) {
                     console.error("Failed to parse notes for dashboard:", e);
                 }
             });
 
-            // Sort all notes by priority
-            allNotes.sort((a, b) => priorityOrder[a.note.priority] - priorityOrder[b.note.priority]);
-
-            highPriorityIssuesListEl.innerHTML = '';
-            if (allNotes.length > 0) {
-                allNotes.forEach(issue => {
-                    const listItem = document.createElement('li');
-                    listItem.textContent = `[${issue.note.priority}] ${issue.name}: ${issue.note.text}`;
-                    highPriorityIssuesListEl.appendChild(listItem);
-                });
-            } else {
-                const listItem = document.createElement('li');
-                listItem.textContent = 'No priority issues at this time.';
-                highPriorityIssuesListEl.appendChild(listItem);
-            }
-        };
-        
-        const updateDashboardTasks = () => {
-            // Filter out completed tasks and sort
-            const outstandingTasks = platoonTasks.filter(task => !task.completed);
-            outstandingTasksCount.textContent = outstandingTasks.length;
-            
-            outstandingTasks.sort((a, b) => {
-                const dueDateA = a.dueDate ? new Date(a.dueDate).getTime() : Infinity;
-                const dueDateB = b.dueDate ? new Date(b.dueDate).getTime() : Infinity;
-                
-                if (dueDateA !== dueDateB) return dueDateA - dueDateB;
-                return priorityOrder[a.priority] - priorityOrder[b.priority];
+            // Add platoon tasks and dynamically update priority
+            const today = new Date();
+            platoonTasks.forEach(task => {
+                if (!task.completed) {
+                    let taskPriority = task.priority;
+                    if (task.dueDate) {
+                        const dueDate = new Date(task.dueDate);
+                        const diffTime = dueDate.getTime() - today.getTime();
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                        
+                        if (diffDays <= 3) {
+                            taskPriority = 'High';
+                        } else if (diffDays <= 7) {
+                            taskPriority = 'Medium';
+                        }
+                    }
+                    allItems.push({ 
+                        type: 'Task', 
+                        id: task.id, 
+                        priority: taskPriority, 
+                        text: task.text, 
+                        dueDate: task.dueDate 
+                    });
+                }
             });
 
-            platoonTasksListEl.innerHTML = '';
-            if (outstandingTasks.length > 0) {
-                outstandingTasks.forEach(task => {
+            // Sort all items
+            allItems.sort((a, b) => {
+                const priorityA = priorityOrder[a.priority];
+                const priorityB = priorityOrder[b.priority];
+
+                if (priorityA !== priorityB) {
+                    return priorityA - priorityB;
+                }
+                
+                // If priorities are equal, sort by due date (for tasks) or timestamp (for notes)
+                const dateA = a.dueDate ? new Date(a.dueDate).getTime() : (a.timestamp ? new Date(a.timestamp).getTime() : Infinity);
+                const dateB = b.dueDate ? new Date(b.dueDate).getTime() : (b.timestamp ? new Date(b.timestamp).getTime() : Infinity);
+                
+                return dateA - dateB;
+            });
+
+            priorityListEl.innerHTML = '';
+            if (allItems.length > 0) {
+                allItems.forEach(item => {
                     const listItem = document.createElement('li');
-                    const dueText = task.dueDate ? ` (Due: ${formatDate(task.dueDate)})` : '';
+                    const isTask = item.type === 'Task';
+                    const dueDateText = isTask && item.dueDate ? ` (Due: ${formatDate(item.dueDate)})` : '';
                     listItem.innerHTML = `
-                         <span class="px-2 py-0.5 text-xs font-semibold rounded-full ${
-                            task.priority === 'High' ? 'bg-red-200 text-red-800' :
-                            task.priority === 'Medium' ? 'bg-yellow-200 text-yellow-800' :
+                        <span class="px-2 py-0.5 text-xs font-semibold rounded-full ${
+                            item.priority === 'High' ? 'bg-red-200 text-red-800' :
+                            item.priority === 'Medium' ? 'bg-yellow-200 text-yellow-800' :
                             'bg-gray-200 text-gray-800'
-                        }">${task.priority}</span>
-                        <span class="ml-2">${task.text}${dueText}</span>
+                        }">${item.priority}</span>
+                        <span class="ml-2">${isTask ? 'TASK' : item.name}: ${item.text}${dueDateText}</span>
                     `;
-                    platoonTasksListEl.appendChild(listItem);
+                    priorityListEl.appendChild(listItem);
                 });
             } else {
                 const listItem = document.createElement('li');
-                listItem.textContent = 'No outstanding platoon tasks at this time.';
-                platoonTasksListEl.appendChild(listItem);
+                listItem.textContent = 'No priority items at this time.';
+                priorityListEl.appendChild(listItem);
             }
         };
 
@@ -933,7 +959,7 @@
                 updateAvailableTraineeCount(dashboardPlatoonFilterEl.value);
                 renderTraineeList();
                 checkForUpcomingAppointments(traineesData);
-                updateDashboardNotes(traineesData);
+                updateDashboardNotesAndTasks();
                 performDailyCheckIn();
             }, (error) => {
                 console.error("Error fetching trainees:", error);
@@ -1224,7 +1250,7 @@
                         </div>
                         <p class="text-xs text-gray-500">${formatTimestamp(note.timestamp)}</p>
                     </div>
-                    <button class="text-red-500 hover:text-red-700 ml-2 delete-note" data-timestamp="${note.timestamp}" data-type="custom">
+                    <button class="text-red-500 hover:text-red-700 ml-2 delete-note" data-timestamp="${note.timestamp}">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm6 0a1 1 0 112 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" />
                         </svg>
@@ -1369,7 +1395,7 @@
                         </div>
                         <p class="text-xs text-gray-500">${formatTimestamp(timestamp)}</p>
                     </div>
-                    <button class="text-red-500 hover:text-red-700 ml-2 delete-note" data-timestamp="${timestamp}" data-type="custom">
+                    <button class="text-red-500 hover:text-red-700 ml-2 delete-note" data-timestamp="${timestamp}">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm6 0a1 1 0 112 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" />
                         </svg>
@@ -1589,6 +1615,7 @@
             document.body.classList.add('modal-open');
             renderTrainingEventsManagementList();
             renderTraineeEventUpdateList();
+            renderTraineeEventViewList();
         });
 
         closeEventsModalBtn.addEventListener('click', () => {
@@ -1819,8 +1846,11 @@
         });
 
         const renderTasksManagementList = () => {
-            // Sort tasks by due date, then by priority, then by completion status
-            platoonTasks.sort((a, b) => {
+            // Filter and sort tasks
+            const outstandingTasks = platoonTasks.filter(task => !task.completed);
+            const completedTasks = platoonTasks.filter(task => task.completed);
+            
+            outstandingTasks.sort((a, b) => {
                 const dueDateA = a.dueDate ? new Date(a.dueDate).getTime() : Infinity;
                 const dueDateB = b.dueDate ? new Date(b.dueDate).getTime() : Infinity;
                 
@@ -1828,46 +1858,75 @@
                 
                 const priorityA = priorityOrder[a.priority];
                 const priorityB = priorityOrder[b.priority];
-                if (priorityA !== priorityB) return priorityA - priorityB;
-                
-                const completedA = a.completed ? 1 : 0;
-                const completedB = b.completed ? 1 : 0;
-                if (completedA !== completedB) return completedA - completedB;
-                
-                return new Date(a.createdAt) - new Date(b.createdAt);
+                return priorityA - priorityB;
             });
             
             tasksManagementListEl.innerHTML = '';
-            if (platoonTasks.length === 0) {
-                 tasksManagementListEl.innerHTML = '<p class="text-center text-gray-500">No tasks at this time.</p>';
-                 return;
+            if (outstandingTasks.length === 0) {
+                 tasksManagementListEl.innerHTML = '<p class="text-center text-gray-500">No outstanding tasks at this time.</p>';
+            } else {
+                outstandingTasks.forEach(task => {
+                    const taskItem = document.createElement('div');
+                    const dueDateText = task.dueDate ? ` (Due: ${formatDate(task.dueDate)})` : '';
+                    taskItem.className = 'flex items-center space-x-2 p-2 bg-gray-50 rounded-lg';
+                    taskItem.innerHTML = `
+                        <input type="checkbox" id="task-${task.id}" data-task-id="${task.id}" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                        <div class="flex-1">
+                            <span class="px-2 py-0.5 text-xs font-semibold rounded-full ${
+                                task.priority === 'High' ? 'bg-red-200 text-red-800' :
+                                task.priority === 'Medium' ? 'bg-yellow-200 text-yellow-800' :
+                                'bg-gray-200 text-gray-800'
+                            }">${task.priority}</span>
+                            <span class="ml-2">${task.text}</span>
+                            ${task.dueDate ? `<span class="ml-2 text-xs text-gray-500">Due: ${formatDate(task.dueDate)}</span>` : ''}
+                        </div>
+                        <button class="text-red-500 hover:text-red-700 delete-task-btn" data-task-id="${task.id}">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm6 0a1 1 0 112 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    `;
+                    tasksManagementListEl.appendChild(taskItem);
+                });
             }
-            
-            platoonTasks.forEach(task => {
-                const isCompletedClass = task.completed ? 'line-through text-gray-500' : '';
-                const taskItem = document.createElement('div');
-                taskItem.className = 'flex items-center space-x-2 p-2 bg-gray-50 rounded-lg';
-                taskItem.innerHTML = `
-                    <input type="checkbox" id="task-${task.id}" data-task-id="${task.id}" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" ${task.completed ? 'checked' : ''}>
-                    <div class="flex-1">
-                        <span class="px-2 py-0.5 text-xs font-semibold rounded-full ${
-                            task.priority === 'High' ? 'bg-red-200 text-red-800' :
-                            task.priority === 'Medium' ? 'bg-yellow-200 text-yellow-800' :
-                            'bg-gray-200 text-gray-800'
-                        }">${task.priority}</span>
-                        <span class="ml-2 ${isCompletedClass}">${task.text}</span>
-                        ${task.dueDate ? `<span class="ml-2 text-xs text-gray-500">Due: ${formatDate(task.dueDate)}</span>` : ''}
-                    </div>
-                    <button class="text-red-500 hover:text-red-700 delete-task-btn" data-task-id="${task.id}">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm6 0a1 1 0 112 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" />
-                        </svg>
-                    </button>
-                `;
-                tasksManagementListEl.appendChild(taskItem);
+
+            completedTasksListEl.innerHTML = '';
+            if (completedTasks.length > 0) {
+                completedTasks.forEach(task => {
+                    const taskItem = document.createElement('div');
+                    taskItem.className = 'flex items-center space-x-2 p-2 bg-gray-200 rounded-lg line-through text-gray-500';
+                    taskItem.innerHTML = `
+                        <input type="checkbox" id="task-${task.id}" data-task-id="${task.id}" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" checked>
+                        <div class="flex-1">
+                            <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-gray-300 text-gray-600">${task.priority}</span>
+                            <span class="ml-2">${task.text}</span>
+                            ${task.dueDate ? `<span class="ml-2 text-xs">Due: ${formatDate(task.dueDate)}</span>` : ''}
+                        </div>
+                        <button class="text-red-500 hover:text-red-700 delete-task-btn" data-task-id="${task.id}">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm6 0a1 1 0 112 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    `;
+                    completedTasksListEl.appendChild(taskItem);
+                });
+            }
+
+            // Add event listeners for new checkboxes
+            tasksManagementListEl.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', async (e) => {
+                    const taskId = e.target.dataset.taskId;
+                    const isCompleted = e.target.checked;
+                    try {
+                        const taskDocRef = doc(db, `artifacts/${traineeAppId}/users/${userId}/tasks/${taskId}`);
+                        await setDoc(taskDocRef, { completed: isCompleted }, { merge: true });
+                    } catch (error) {
+                        console.error("Error updating task status:", error);
+                    }
+                });
             });
 
-            tasksManagementListEl.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            completedTasksListEl.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
                 checkbox.addEventListener('change', async (e) => {
                     const taskId = e.target.dataset.taskId;
                     const isCompleted = e.target.checked;
@@ -1881,6 +1940,20 @@
             });
             
             tasksManagementListEl.querySelectorAll('.delete-task-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const taskId = e.currentTarget.dataset.taskId;
+                    showConfirmation("Delete Task", "Are you sure you want to delete this task?", async () => {
+                        try {
+                            const taskDocRef = doc(db, `artifacts/${traineeAppId}/users/${userId}/tasks/${taskId}`);
+                            await deleteDoc(taskDocRef);
+                        } catch (error) {
+                            console.error("Error deleting task:", error);
+                        }
+                    });
+                });
+            });
+            
+            completedTasksListEl.querySelectorAll('.delete-task-btn').forEach(button => {
                 button.addEventListener('click', (e) => {
                     const taskId = e.currentTarget.dataset.taskId;
                     showConfirmation("Delete Task", "Are you sure you want to delete this task?", async () => {
