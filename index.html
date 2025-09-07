@@ -327,17 +327,25 @@
     <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, addDoc, setDoc, deleteDoc, onSnapshot, collection, query, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
         // Firestore debugging
         setLogLevel('debug');
 
-        // Global variables for Firebase configuration
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCoXUDjmqNNCkGL2NyQfHolHJk-kUXQnxI",
+            authDomain: "trainee-tracker-dfdbf.firebaseapp.com",
+            projectId: "trainee-tracker-dfdbf",
+            storageBucket: "trainee-tracker-dfdbf.firebasestorage.app",
+            messagingSenderId: "204041263094",
+            appId: "1:204041263094:web:9fbdc155c2bec6ce76d9d7",
+            measurementId: "G-NWT2N93JY7"
+        };
+        
+        const traineeAppId = "trainee-tracker-dfdbf";
 
         let db, auth, userId, traineesData = [], globalTrainingEvents = [];
 
@@ -506,7 +514,7 @@
 
         // Check for daily check-in
         const performDailyCheckIn = async () => {
-            const userDocRef = doc(db, `artifacts/${appId}/users/${userId}/_metadata/app`);
+            const userDocRef = doc(db, `artifacts/${traineeAppId}/users/${userId}/_metadata/app`);
             const userDocSnap = await getDoc(userDocRef);
             const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
             
@@ -551,6 +559,7 @@
                         setupRealtimeListeners();
                     } else {
                         try {
+                           const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
                             if (initialAuthToken) {
                                 await signInWithCustomToken(auth, initialAuthToken);
                             } else {
@@ -576,9 +585,9 @@
 
         // Set up real-time listeners for all data
         const setupRealtimeListeners = () => {
-            const traineesColRef = collection(db, `artifacts/${appId}/users/${userId}/trainees`);
+            const traineesColRef = collection(db, `artifacts/${traineeAppId}/users/${userId}/trainees`);
             const qTrainees = query(traineesColRef);
-            const eventsColRef = collection(db, `artifacts/${appId}/users/${userId}/training_events`);
+            const eventsColRef = collection(db, `artifacts/${traineeAppId}/users/${userId}/training_events`);
             const qEvents = query(eventsColRef);
         
             onSnapshot(qEvents, (snapshot) => {
@@ -734,7 +743,7 @@
             if (!name || !platoon) return;
 
             try {
-                const traineesColRef = collection(db, `artifacts/${appId}/users/${userId}/trainees`);
+                const traineesColRef = collection(db, `artifacts/${traineeAppId}/users/${userId}/trainees`);
                 const newTraineeData = {
                     name,
                     platoon,
@@ -961,7 +970,7 @@
             });
 
             try {
-                const traineeDocRef = doc(db, `artifacts/${appId}/users/${userId}/trainees/${currentEditingTraineeId}`);
+                const traineeDocRef = doc(db, `artifacts/${traineeAppId}/users/${userId}/trainees/${currentEditingTraineeId}`);
                 await setDoc(traineeDocRef, {
                     status: newStatus,
                     location: newLocation,
@@ -985,7 +994,7 @@
             if (!currentEditingTraineeId) return;
             showConfirmation("Delete Trainee", "Are you sure you want to delete this trainee? This action cannot be undone.", async () => {
                 try {
-                    const traineeDocRef = doc(db, `artifacts/${appId}/users/${userId}/trainees/${currentEditingTraineeId}`);
+                    const traineeDocRef = doc(db, `artifacts/${traineeAppId}/users/${userId}/trainees/${currentEditingTraineeId}`);
                     await deleteDoc(traineeDocRef);
                     traineeModal.classList.add('hidden');
                     currentEditingTraineeId = null;
@@ -997,7 +1006,7 @@
 
         // Daily Check-in Modal Logic
         skipCheckInBtn.addEventListener('click', async () => {
-            const userDocRef = doc(db, `artifacts/${appId}/users/${userId}/_metadata/app`);
+            const userDocRef = doc(db, `artifacts/${traineeAppId}/users/${userId}/_metadata/app`);
             await setDoc(userDocRef, { lastDailyCheckIn: new Date().toISOString().slice(0, 10) }, { merge: true });
             dailyCheckInModal.classList.add('hidden');
         });
@@ -1033,14 +1042,14 @@
             // Batch updates to Firestore
             for (const id in traineeUpdates) {
                 try {
-                    const traineeDocRef = doc(db, `artifacts/${appId}/users/${userId}/trainees/${id}`);
+                    const traineeDocRef = doc(db, `artifacts/${traineeAppId}/users/${userId}/trainees/${id}`);
                     await setDoc(traineeDocRef, traineeUpdates[id], { merge: true });
                 } catch (error) {
                     console.error(`Error updating trainee ${id} during check-in:`, error);
                 }
             }
 
-            const userDocRef = doc(db, `artifacts/${appId}/users/${userId}/_metadata/app`);
+            const userDocRef = doc(db, `artifacts/${traineeAppId}/users/${userId}/_metadata/app`);
             await setDoc(userDocRef, { lastDailyCheckIn: new Date().toISOString().slice(0, 10) }, { merge: true });
             dailyCheckInModal.classList.add('hidden');
         });
@@ -1076,7 +1085,7 @@
 
             if (newTrainees.length > 0) {
                 try {
-                    const traineesColRef = collection(db, `artifacts/${appId}/users/${userId}/trainees`);
+                    const traineesColRef = collection(db, `artifacts/${traineeAppId}/users/${userId}/trainees`);
                     for (const trainee of newTrainees) {
                         const newTraineeData = {
                             name: trainee.name,
@@ -1121,7 +1130,7 @@
             if (!newEventName) return;
 
             try {
-                const eventsColRef = collection(db, `artifacts/${appId}/users/${userId}/training_events`);
+                const eventsColRef = collection(db, `artifacts/${traineeAppId}/users/${userId}/training_events`);
                 await addDoc(eventsColRef, { name: newEventName });
                 newTrainingEventNameEl.value = '';
             } catch (error) {
@@ -1146,7 +1155,7 @@
                     const eventId = e.currentTarget.dataset.eventId;
                     showConfirmation("Delete Training Event", "Are you sure you want to delete this training event? This action cannot be undone.", async () => {
                         try {
-                            const eventDocRef = doc(db, `artifacts/${appId}/users/${userId}/training_events/${eventId}`);
+                            const eventDocRef = doc(db, `artifacts/${traineeAppId}/users/${userId}/training_events/${eventId}`);
                             await deleteDoc(eventDocRef);
                         } catch (error) {
                             console.error("Error deleting training event:", error);
@@ -1159,3 +1168,4 @@
     </script>
 </body>
 </html>
+
