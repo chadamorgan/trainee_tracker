@@ -145,15 +145,15 @@
         </div>
     </div>
 
-    <!-- Edit/Details Modal (Initially Hidden) -->
+    <!-- Edit/Details Modal -->
     <div id="traineeModal" class="modal fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900 bg-opacity-75 hidden">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl mx-auto p-6 md:p-8 overflow-y-auto max-h-[90vh]">
-            <div class="flex justify-between items-center pb-4 border-b">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl mx-auto p-6 md:p-8 flex flex-col max-h-[90vh]">
+            <div class="flex justify-between items-center pb-4 border-b flex-shrink-0">
                 <h3 id="modalName" class="text-2xl font-bold text-gray-900"></h3>
                 <button id="closeModalBtn" class="text-gray-400 hover:text-gray-600 font-bold text-2xl">&times;</button>
             </div>
-            <div class="py-4 space-y-6">
-
+            <div class="py-4 space-y-6 flex-1 overflow-y-auto min-h-0">
+                
                 <!-- Accountability Status & Location -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="space-y-2">
@@ -283,7 +283,7 @@
                 </div>
                 
             </div>
-            <div class="flex justify-end space-x-2 pt-4 border-t">
+            <div class="flex justify-end space-x-2 pt-4 border-t flex-shrink-0">
                 <button id="updateTraineeBtn" class="px-4 py-2 text-sm font-semibold rounded-lg text-white bg-green-600 hover:bg-green-700">Update</button>
                 <button id="deleteTraineeBtn" class="px-4 py-2 text-sm font-semibold rounded-lg text-white bg-red-600 hover:bg-red-700">Delete</button>
             </div>
@@ -488,16 +488,19 @@
             confirmTitleEl.textContent = title;
             confirmMessageEl.textContent = message;
             confirmModal.classList.remove('hidden');
+            document.body.classList.add('modal-open');
 
             const handleProceed = () => {
                 onConfirm();
                 confirmModal.classList.add('hidden');
+                document.body.classList.remove('modal-open');
                 confirmProceedBtn.removeEventListener('click', handleProceed);
                 confirmCancelBtn.removeEventListener('click', handleCancel);
             };
 
             const handleCancel = () => {
                 confirmModal.classList.add('hidden');
+                document.body.classList.remove('modal-open');
                 confirmProceedBtn.removeEventListener('click', handleProceed);
                 confirmCancelBtn.removeEventListener('click', handleCancel);
             };
