@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drill Sergeant Trainee Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+        .notification-banner {
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 40;
+            transition: all 0.5s ease-in-out;
+        }
+        .modal {
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <!-- Notification Banner -->
+    <div id="notificationBanner" class="notification-banner fixed hidden p-4 bg-yellow-400 text-yellow-900 rounded-lg shadow-xl m-4">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <span id="notificationMessage" class="font-semibold"></span>
+            </div>
+            <button onclick="document.getElementById('notificationBanner').classList.add('hidden')" class="text-yellow-900 hover:text-yellow-700 font-bold ml-4">&times;</button>
+        </div>
+    </div>
+
+    <div class="max-w-4xl mx-auto bg-white p-6 md:p-8 rounded-xl shadow-lg">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-6 border-b pb-4">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900">Platoon Tracker</h1>
+            <div class="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4 mt-4 md:mt-0">
+                <div class="p-3 bg-indigo-100 rounded-lg shadow-inner text-center">
+                    <p class="text-lg font-bold text-indigo-800" id="availableCount">0 / 0 Trainees Available</p>
+                </div>
+                <button id="addTraineeBtn" class="w-full md:w-auto px-6 py-2 bg-indigo-600 text-white font-semibold rounded-full shadow-md hover:bg-indigo-700 transition-all">
+                    Add Trainee
+                </button>
+                <button id="bulkAddBtn" class="w-full md:w-auto px-6 py-2 bg-gray-600 text-white font-semibold rounded-full shadow-md hover:bg-gray-700 transition-all">
+                    Bulk Add
+                </button>
+            </div>
+        </div>
+
+        <!-- Authentication and User Info -->
+        <div class="bg-gray-100 p-4 rounded-lg mb-6 shadow-inner">
+            <h3 class="text-lg font-semibold text-gray-800">User Information</h3>
+            <p id="authStatus" class="mt-1 text-sm text-gray-600">Loading...</p>
+            <p id="userIdDisplay" class="mt-1 text-sm text-gray-600"></p>
+        </div>
+
+        <!-- Platoon Dashboard -->
+        <div class="bg-gray-100 p-4 rounded-xl shadow-inner mb-6">
+            <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Platoon Dashboard</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <!-- Status counts -->
+                <div class="p-3 bg-white rounded-lg shadow-md text-center">
+                    <p class="text-sm font-medium text-gray-600">Present</p>
+                    <p id="presentCount" class="text-2xl font-bold text-green-600 mt-1">0</p>
+                </div>
+                <div class="p-3 bg-white rounded-lg shadow-md text-center">
+                    <p class="text-sm font-medium text-gray-600">Sick Call</p>
+                    <p id="sickCallCount" class="text-2xl font-bold text-yellow-600 mt-1">0</p>
+                </div>
+                <div class="p-3 bg-white rounded-lg shadow-md text-center">
+                    <p class="text-sm font-medium text-gray-600">Profiles</p>
+                    <p id="profileCount" class="text-2xl font-bold text-red-600 mt-1">0</p>
+                </div>
+                <div class="p-3 bg-white rounded-lg shadow-md text-center">
+                    <p class="text-sm font-medium text-gray-600">Unqualified</p>
+                    <p id="unqualifiedCount" class="text-2xl font-bold text-purple-600 mt-1">0</p>
+                </div>
+                <div class="p-3 bg-white rounded-lg shadow-md text-center">
+                    <p class="text-sm font-medium text-gray-600">ACFT Fail</p>
+                    <p id="acftFailCount" class="text-2xl font-bold text-red-600 mt-1">0</p>
+                </div>
+            </div>
+            <div class="mt-4">
+                <h4 class="text-md font-semibold text-gray-800">Upcoming Appointments:</h4>
+                <ul id="upcomingAppointmentsList" class="mt-2 space-y-1 text-sm text-gray-600">
+                    <!-- Appointments will be populated here -->
+                </ul>
+            </div>
+        </div>
+
+        <!-- Add Trainee Form (Initially Hidden) -->
+        <div id="addTraineeFormContainer" class="bg-blue-50 p-6 rounded-lg mb-6 shadow-md transition-all duration-300 hidden">
+            <h2 class="text-2xl font-bold text-blue-800 mb-4">New Trainee</h2>
+            <form id="traineeForm" class="space-y-4">
+                <div>
+                    <label for="traineeName" class="block text-sm font-medium text-gray-700">Trainee Name</label>
+                    <input type="text" id="traineeName" name="name" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="platoonName" class="block text-sm font-medium text-gray-700">Platoon/Company</label>
+                    <input type="text" id="platoonName" name="platoon" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div class="flex justify-end space-x-2">
+                    <button type="button" id="cancelAddBtn" class="px-4 py-2 text-sm font-semibold rounded-lg text-gray-700 bg-gray-200 hover:bg-gray-300">Cancel</button>
+                    <button type="submit" class="px-4 py-2 text-sm font-semibold rounded-lg text-white bg-blue-600 hover:bg-blue-700">Save Trainee</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Trainee List and Filter -->
+        <div class="mb-6">
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-4 space-y-4 sm:space-y-0">
+                <h2 class="text-2xl font-bold text-gray-900">Trainee Roster</h2>
+                <div class="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
+                    <input type="text" id="traineeSearch" placeholder="Search by name..." class="w-full sm:w-auto px-4 py-2 rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <select id="platoonFilter" class="w-full sm:w-auto px-4 py-2 rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <option value="All">All Platoons</option>
+                    </select>
+                </div>
+            </div>
+            <div id="traineeListContainer" class="space-y-4">
+                <p id="loadingStatus" class="text-center text-gray-500">Loading trainees...</p>
+                <div id="traineeList" class="space-y-4">
+                    <!-- Trainee cards will be injected here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit/Details Modal (Initially Hidden) -->
+    <div id="traineeModal" class="modal fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900 bg-opacity-75 hidden">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl mx-auto p-6 md:p-8">
+            <div class="flex justify-between items-center pb-4 border-b">
+                <h3 id="modalName" class="text-2xl font-bold text-gray-900"></h3>
+                <button id="closeModalBtn" class="text-gray-400 hover:text-gray-600 font-bold text-2xl">&times;</button>
+            </div>
+            <div class="py-4 space-y-6">
+
+                <!-- Accountability Status & Location -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <label for="modalStatus" class="block text-sm font-medium text-gray-700">Accountability Status:</label>
+                        <select id="modalStatus" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 w-full">
+                            <option value="Present">Present</option>
+                            <option value="Sick Call">Sick Call</option>
+                            <option value="On Leave">On Leave</option>
+                            <option value="Absent">Absent</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="space-y-2">
+                        <label for="traineeLocation" class="block text-sm font-medium text-gray-700">Current Location:</label>
+                        <input type="text" id="traineeLocation" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    </div>
+                </div>
+
+                <!-- Training & Fitness -->
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h4 class="text-lg font-bold text-gray-800">Training & Fitness</h4>
+                        <button id="manageTrainingBtn" class="px-3 py-1 text-xs font-semibold rounded-full bg-gray-200 hover:bg-gray-300">Manage Events</button>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- ACFT Score -->
+                        <div>
+                            <label for="acftScore" class="block text-sm font-medium text-gray-700">ACFT Score:</label>
+                            <select id="acftScore" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                <option value="">N/A</option>
+                                <option value="Pass">Pass</option>
+                                <option value="Fail">Fail</option>
+                            </select>
+                        </div>
+                        <!-- Run Time -->
+                        <div>
+                            <label for="runTime" class="block text-sm font-medium text-gray-700">2-Mile Run Time (e.g., 14:30):</label>
+                            <input type="text" id="runTime" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        </div>
+                        <!-- Rifle Qualification -->
+                        <div>
+                            <label for="rifleQual" class="block text-sm font-medium text-gray-700">Rifle Qualification:</label>
+                            <select id="rifleQual" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                <option value="">N/A</option>
+                                <option value="Pass">Pass</option>
+                                <option value="Fail">Fail</option>
+                            </select>
+                        </div>
+                    </div>
+                    <h5 class="text-sm font-semibold text-gray-700 mt-4">Completed Training Events:</h5>
+                    <div id="trainingEventsList" class="space-y-2">
+                        <!-- Checkboxes will be injected here -->
+                    </div>
+                </div>
+
+                <!-- Counseling & Disciplinary Records -->
+                <div class="space-y-2">
+                    <h4 class="text-lg font-bold text-gray-800">Counseling & Disciplinary Records</h4>
+                    <div id="counselingList" class="space-y-2">
+                        <!-- Records will be injected here -->
+                    </div>
+                    <div class="flex space-x-2 items-end">
+                        <div class="flex-1">
+                            <label for="newCounselingDesc" class="block text-sm font-medium text-gray-700">New Record:</label>
+                            <input type="text" id="newCounselingDesc" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                        <button id="addCounselingBtn" class="px-4 py-2 text-sm font-semibold rounded-lg text-white bg-blue-600 hover:bg-blue-700 whitespace-nowrap">Add</button>
+                    </div>
+                </div>
+
+                <!-- Profile Data -->
+                <div class="space-y-2">
+                    <h4 class="text-lg font-bold text-gray-800">Medical/Physical Profile</h4>
+                    <label for="profileRestriction" class="block text-sm font-medium text-gray-700">Restriction:</label>
+                    <textarea id="profileRestriction" rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
+                    <label for="profileEndDate" class="block text-sm font-medium text-gray-700">End Date:</label>
+                    <input type="date" id="profileEndDate" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                </div>
+
+                <!-- Appointments -->
+                <div class="space-y-4">
+                    <h4 class="text-lg font-bold text-gray-800">Appointments</h4>
+                    <div id="appointmentsList" class="space-y-2">
+                        <!-- Appointments will be injected here -->
+                    </div>
+                    <div class="flex space-x-2 items-end">
+                        <div class="flex-1">
+                            <label for="newAppointmentDate" class="block text-sm font-medium text-gray-700">Date:</label>
+                            <input type="date" id="newAppointmentDate" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                        <div class="flex-1">
+                            <label for="newAppointmentDesc" class="block text-sm font-medium text-gray-700">Description:</label>
+                            <input type="text" id="newAppointmentDesc" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                        <button id="addAppointmentBtn" class="px-4 py-2 text-sm font-semibold rounded-lg text-white bg-blue-600 hover:bg-blue-700 whitespace-nowrap">Add</button>
+                    </div>
+                </div>
+
+                <!-- History Notes -->
+                <div class="space-y-2">
+                    <h4 class="text-lg font-bold text-gray-800">History Notes</h4>
+                    <textarea id="modalNotes" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
+                </div>
+                
+            </div>
+            <div class="flex justify-end space-x-2 pt-4 border-t">
+                <button id="updateTraineeBtn" class="px-4 py-2 text-sm font-semibold rounded-lg text-white bg-green-600 hover:bg-green-700">Update</button>
+                <button id="deleteTraineeBtn" class="px-4 py-2 text-sm font-semibold rounded-lg text-white bg-red-600 hover:bg-red-700">Delete</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Custom Confirmation Modal (replaces window.confirm) -->
+    <div id="confirmModal" class="modal fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900 bg-opacity-75 hidden">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm mx-auto p-6 md:p-8 text-center">
+            <h3 id="confirmTitle" class="text-xl font-bold text-gray-900 mb-4">Are you sure?</h3>
+            <p id="confirmMessage" class="text-gray-700 mb-6">This action cannot be undone.</p>
+            <div class="flex justify-center space-x-4">
+                <button id="confirmCancelBtn" class="px-4 py-2 text-sm font-semibold rounded-lg text-gray-700 bg-gray-200 hover:bg-gray-300">Cancel</button>
+                <button id="confirmProceedBtn" class="px-4 py-2 text-sm font-semibold rounded-lg text-white bg-red-600 hover:bg-red-700">Proceed</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Daily Check-in Modal -->
+    <div id="dailyCheckInModal" class="modal fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900 bg-opacity-75 hidden">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl mx-auto p-6 md:p-8">
+            <h3 class="text-2xl font-bold text-gray-900 mb-4 border-b pb-2">Daily Accountability Check-in</h3>
+            <p class="text-gray-700 mb-6">Please update the status for today's sick call and appointments.</p>
+            <div id="dailyCheckInList" class="space-y-4 max-h-96 overflow-y-auto">
+                <!-- Trainees for daily check-in will be injected here -->
+            </div>
+            <div class="flex justify-end space-x-2 pt-4 border-t mt-4">
+                <button id="skipCheckInBtn" class="px-4 py-2 text-sm font-semibold rounded-lg text-gray-700 bg-gray-200 hover:bg-gray-300">Skip for Today</button>
+                <button id="submitCheckInBtn" class="px-4 py-2 text-sm font-semibold rounded-lg text-white bg-green-600 hover:bg-green-700">Submit Check-in</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bulk Add Trainees Modal -->
+    <div id="bulkAddModal" class="modal fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900 bg-opacity-75 hidden">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-auto p-6 md:p-8">
+            <div class="flex justify-between items-center pb-4 border-b">
+                <h3 class="text-2xl font-bold text-gray-900">Bulk Add Trainees</h3>
+                <button id="closeBulkAddModalBtn" class="text-gray-400 hover:text-gray-600 font-bold text-2xl">&times;</button>
+            </div>
+            <div class="py-4 space-y-4">
+                <p class="text-gray-700">Paste your trainee data below, one per line. Format: `Trainee Name, Platoon/Company`</p>
+                <textarea id="bulkTraineeInput" rows="10" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+            </div>
+            <div class="flex justify-end pt-4 border-t">
+                <button id="bulkAddCancelBtn" class="px-4 py-2 text-sm font-semibold rounded-lg text-gray-700 bg-gray-200 hover:bg-gray-300">Cancel</button>
+                <button id="bulkAddSaveBtn" class="px-4 py-2 text-sm font-semibold rounded-lg text-white bg-blue-600 hover:bg-blue-700">Add Trainees</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manage Training Events Modal -->
+    <div id="manageTrainingModal" class="modal fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900 bg-opacity-75 hidden">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-auto p-6 md:p-8">
+            <div class="flex justify-between items-center pb-4 border-b">
+                <h3 class="text-2xl font-bold text-gray-900">Manage Training Events</h3>
+                <button id="closeManageTrainingBtn" class="text-gray-400 hover:text-gray-600 font-bold text-2xl">&times;</button>
+            </div>
+            <div class="py-4 space-y-4">
+                <p class="text-gray-700">Define the events your trainees will complete during the cycle.</p>
+                <div class="flex space-x-2">
+                    <input type="text" id="newTrainingEventName" placeholder="New Event Name" class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <button id="addTrainingEventBtn" class="px-4 py-2 text-sm font-semibold rounded-lg text-white bg-blue-600 hover:bg-blue-700 whitespace-nowrap">Add Event</button>
+                </div>
+                <div id="trainingEventsManagementList" class="space-y-2 max-h-64 overflow-y-auto">
+                    <!-- Events will be populated here -->
+                </div>
+            </div>
+            <div class="flex justify-end pt-4 border-t">
+                <button id="saveTrainingEventsBtn" class="px-4 py-2 text-sm font-semibold rounded-lg text-white bg-green-600 hover:bg-green-700">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, addDoc, setDoc, deleteDoc, onSnapshot, collection, query, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // Firestore debugging
+        setLogLevel('debug');
+
+        // Global variables for Firebase configuration
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let db, auth, userId, traineesData = [], globalTrainingEvents = [];
+
+        // UI Elements
+        const authStatusEl = document.getElementById('authStatus');
+        const userIdDisplayEl = document.getElementById('userIdDisplay');
+        const availableCountEl = document.getElementById('availableCount');
+        const presentCountEl = document.getElementById('presentCount');
+        const sickCallCountEl = document.getElementById('sickCallCount');
+        const profileCountEl = document.getElementById('profileCount');
+        const unqualifiedCountEl = document.getElementById('unqualifiedCount');
+        const acftFailCountEl = document.getElementById('acftFailCount');
+        const upcomingAppointmentsListEl = document.getElementById('upcomingAppointmentsList');
+
+        const addTraineeBtn = document.getElementById('addTraineeBtn');
+        const addTraineeFormContainer = document.getElementById('addTraineeFormContainer');
+        const cancelAddBtn = document.getElementById('cancelAddBtn');
+        const traineeForm = document.getElementById('traineeForm');
+        const traineeList = document.getElementById('traineeList');
+        const loadingStatusEl = document.getElementById('loadingStatus');
+
+        const traineeModal = document.getElementById('traineeModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const modalNameEl = document.getElementById('modalName');
+        const modalStatusEl = document.getElementById('modalStatus');
+        const traineeLocationEl = document.getElementById('traineeLocation');
+        const acftScoreEl = document.getElementById('acftScore');
+        const runTimeEl = document.getElementById('runTime');
+        const rifleQualEl = document.getElementById('rifleQual');
+        const trainingEventsListEl = document.getElementById('trainingEventsList');
+        const counselingListEl = document.getElementById('counselingList');
+        const newCounselingDescEl = document.getElementById('newCounselingDesc');
+        const addCounselingBtn = document.getElementById('addCounselingBtn');
+        const profileRestrictionEl = document.getElementById('profileRestriction');
+        const profileEndDateEl = document.getElementById('profileEndDate');
+        const appointmentsListEl = document.getElementById('appointmentsList');
+        const newAppointmentDateEl = document.getElementById('newAppointmentDate');
+        const newAppointmentDescEl = document.getElementById('newAppointmentDesc');
+        const addAppointmentBtn = document.getElementById('addAppointmentBtn');
+        const modalNotesEl = document.getElementById('modalNotes');
+        const updateTraineeBtn = document.getElementById('updateTraineeBtn');
+        const deleteTraineeBtn = document.getElementById('deleteTraineeBtn');
+        
+        const confirmModal = document.getElementById('confirmModal');
+        const confirmTitleEl = document.getElementById('confirmTitle');
+        const confirmMessageEl = document.getElementById('confirmMessage');
+        const confirmCancelBtn = document.getElementById('confirmCancelBtn');
+        const confirmProceedBtn = document.getElementById('confirmProceedBtn');
+        
+        const notificationBanner = document.getElementById('notificationBanner');
+        const notificationMessageEl = document.getElementById('notificationMessage');
+
+        const dailyCheckInModal = document.getElementById('dailyCheckInModal');
+        const dailyCheckInListEl = document.getElementById('dailyCheckInList');
+        const skipCheckInBtn = document.getElementById('skipCheckInBtn');
+        const submitCheckInBtn = document.getElementById('submitCheckInBtn');
+
+        const manageTrainingModal = document.getElementById('manageTrainingModal');
+        const manageTrainingBtn = document.getElementById('manageTrainingBtn');
+        const closeManageTrainingBtn = document.getElementById('closeManageTrainingBtn');
+        const newTrainingEventNameEl = document.getElementById('newTrainingEventName');
+        const addTrainingEventBtn = document.getElementById('addTrainingEventBtn');
+        const trainingEventsManagementListEl = document.getElementById('trainingEventsManagementList');
+
+        const traineeSearchEl = document.getElementById('traineeSearch');
+        const platoonFilterEl = document.getElementById('platoonFilter');
+
+        const bulkAddBtn = document.getElementById('bulkAddBtn');
+        const bulkAddModal = document.getElementById('bulkAddModal');
+        const closeBulkAddModalBtn = document.getElementById('closeBulkAddModalBtn');
+        const bulkAddCancelBtn = document.getElementById('bulkAddCancelBtn');
+        const bulkAddSaveBtn = document.getElementById('bulkAddSaveBtn');
+        const bulkTraineeInput = document.getElementById('bulkTraineeInput');
+        
+        let currentEditingTraineeId = null;
+        let platoons = new Set();
+
+        // Function to convert Firestore timestamp or ISO string to a readable string
+        const formatDate = (date) => {
+            if (!date) return 'N/A';
+            let d = date;
+            if (typeof date === 'string') {
+                d = new Date(date);
+            } else if (date && typeof date.toDate === 'function') {
+                d = date.toDate();
+            }
+            return d.toLocaleDateString();
+        };
+
+        const formatTimestamp = (timestamp) => {
+            if (timestamp && typeof timestamp.toDate === 'function') {
+                return timestamp.toDate().toLocaleString();
+            }
+            return new Date().toLocaleString();
+        };
+
+        // Custom confirmation modal logic
+        const showConfirmation = (title, message, onConfirm) => {
+            confirmTitleEl.textContent = title;
+            confirmMessageEl.textContent = message;
+            confirmModal.classList.remove('hidden');
+
+            const handleProceed = () => {
+                onConfirm();
+                confirmModal.classList.add('hidden');
+                confirmProceedBtn.removeEventListener('click', handleProceed);
+                confirmCancelBtn.removeEventListener('click', handleCancel);
+            };
+
+            const handleCancel = () => {
+                confirmModal.classList.add('hidden');
+                confirmProceedBtn.removeEventListener('click', handleProceed);
+                confirmCancelBtn.removeEventListener('click', handleCancel);
+            };
+
+            confirmProceedBtn.addEventListener('click', handleProceed);
+            confirmCancelBtn.addEventListener('click', handleCancel);
+        };
+        
+        // Check for upcoming appointments
+        const checkForUpcomingAppointments = (trainees) => {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const tenDaysFromNow = new Date(today);
+            tenDaysFromNow.setDate(today.getDate() + 10);
+            
+            const upcoming = [];
+            
+            trainees.forEach(trainee => {
+                const appointments = JSON.parse(trainee.appointments || '[]');
+                appointments.forEach(app => {
+                    const appDate = new Date(app.date);
+                    if (appDate >= today && appDate <= tenDaysFromNow) {
+                        const daysLeft = Math.ceil((appDate - today) / (1000 * 60 * 60 * 24));
+                        upcoming.push({ name: trainee.name, description: app.description, daysLeft });
+                    }
+                });
+            });
+            
+            if (upcoming.length > 0) {
+                const message = upcoming.map(item => {
+                    const daysText = item.daysLeft === 0 ? 'today' : `${item.daysLeft} day${item.daysLeft === 1 ? '' : 's'}`;
+                    return `${item.name}: ${item.description} (${daysText} left)`;
+                }).join('; ');
+                
+                notificationMessageEl.textContent = `Upcoming Appointments: ${message}.`;
+                notificationBanner.classList.remove('hidden');
+            } else {
+                notificationBanner.classList.add('hidden');
+            }
+
+            // Update upcoming appointments list in dashboard
+            upcomingAppointmentsListEl.innerHTML = '';
+            if (upcoming.length > 0) {
+                upcoming.forEach(app => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = `${app.name}: ${app.description}`;
+                    upcomingAppointmentsListEl.appendChild(listItem);
+                });
+            } else {
+                const listItem = document.createElement('li');
+                listItem.textContent = 'No upcoming appointments in the next 10 days.';
+                upcomingAppointmentsListEl.appendChild(listItem);
+            }
+        };
+
+        // Check for daily check-in
+        const performDailyCheckIn = async () => {
+            const userDocRef = doc(db, `artifacts/${appId}/users/${userId}/_metadata/app`);
+            const userDocSnap = await getDoc(userDocRef);
+            const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+            
+            if (userDocSnap.exists() && userDocSnap.data().lastDailyCheckIn === today) {
+                // Check-in already done for today, do nothing.
+                return;
+            }
+
+            // Show daily check-in modal
+            dailyCheckInListEl.innerHTML = '';
+            traineesData.forEach(trainee => {
+                const checkInItem = document.createElement('div');
+                checkInItem.className = 'flex items-center space-x-4 p-2 bg-gray-50 rounded-lg';
+                checkInItem.innerHTML = `
+                    <div class="flex-1 font-semibold">${trainee.name}</div>
+                    <select class="status-select rounded-md border-gray-300 shadow-sm" data-id="${trainee.id}">
+                        <option value="Present" ${trainee.status === 'Present' ? 'selected' : ''}>Present</option>
+                        <option value="Sick Call" ${trainee.status === 'Sick Call' ? 'selected' : ''}>Sick Call</option>
+                        <option value="On Leave" ${trainee.status === 'On Leave' ? 'selected' : ''}>On Leave</option>
+                        <option value="Absent" ${trainee.status === 'Absent' ? 'selected' : ''}>Absent</option>
+                        <option value="Other" ${trainee.status === 'Other' ? 'selected' : ''}>Other</option>
+                    </select>
+                `;
+                dailyCheckInListEl.appendChild(checkInItem);
+            });
+
+            dailyCheckInModal.classList.remove('hidden');
+        };
+
+        // Initialize Firebase and Authentication
+        window.onload = function() {
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        authStatusEl.textContent = 'Status: Authenticated';
+                        userIdDisplayEl.textContent = `User ID: ${userId}`;
+                        setupRealtimeListeners();
+                    } else {
+                        try {
+                            if (initialAuthToken) {
+                                await signInWithCustomToken(auth, initialAuthToken);
+                            } else {
+                                await signInAnonymously(auth);
+                            }
+                        } catch (error) {
+                            console.error("Authentication failed:", error);
+                            authStatusEl.textContent = 'Status: Not Authenticated';
+                            userIdDisplayEl.textContent = 'Error during sign-in.';
+                            userId = crypto.randomUUID();
+                            userIdDisplayEl.textContent = `Using temporary ID: ${userId}`;
+                            setupRealtimeListeners();
+                        }
+                    }
+                });
+
+            } catch (error) {
+                console.error("Firebase initialization failed:", error);
+                authStatusEl.textContent = 'Status: Error';
+                userIdDisplayEl.textContent = 'Could not initialize Firebase.';
+            }
+        };
+
+        // Set up real-time listeners for all data
+        const setupRealtimeListeners = () => {
+            const traineesColRef = collection(db, `artifacts/${appId}/users/${userId}/trainees`);
+            const qTrainees = query(traineesColRef);
+            const eventsColRef = collection(db, `artifacts/${appId}/users/${userId}/training_events`);
+            const qEvents = query(eventsColRef);
+        
+            onSnapshot(qEvents, (snapshot) => {
+                globalTrainingEvents = [];
+                snapshot.forEach(doc => {
+                    globalTrainingEvents.push({ id: doc.id, ...doc.data() });
+                });
+            }, (error) => {
+                console.error("Error fetching global training events:", error);
+            });
+        
+            onSnapshot(qTrainees, (snapshot) => {
+                loadingStatusEl.style.display = 'none';
+                traineesData = [];
+                platoons.clear();
+                const statusCounts = { 'Present': 0, 'Sick Call': 0, 'On Leave': 0, 'Absent': 0, 'Other': 0 };
+                let profileCount = 0;
+                let unqualifiedCount = 0;
+                let acftFailCount = 0;
+
+                if (snapshot.empty) {
+                    traineeList.innerHTML = '<p class="text-center text-gray-500">No trainees added yet.</p>';
+                } else {
+                    let availableCount = 0;
+                    const totalCount = snapshot.size;
+                    snapshot.forEach(doc => {
+                        const trainee = { id: doc.id, ...doc.data() };
+                        traineesData.push(trainee);
+                        platoons.add(trainee.platoon);
+                        
+                        // Update dashboard counts
+                        if (statusCounts.hasOwnProperty(trainee.status)) {
+                             statusCounts[trainee.status]++;
+                        } else {
+                            statusCounts['Other']++;
+                        }
+                        
+                        const profile = JSON.parse(trainee.profile || '{}');
+                        if (profile.restriction) {
+                            profileCount++;
+                        }
+                        const fitness = JSON.parse(trainee.fitness || '{}');
+                        if (fitness.rifleQual === 'Fail') {
+                            unqualifiedCount++;
+                        }
+                        if (fitness.acftScore === 'Fail') {
+                            acftFailCount++;
+                        }
+
+                        if (trainee.status === 'Present') {
+                            availableCount++;
+                        }
+                    });
+                    availableCountEl.textContent = `${availableCount} / ${totalCount} Trainees Available`;
+                }
+
+                presentCountEl.textContent = statusCounts['Present'];
+                sickCallCountEl.textContent = statusCounts['Sick Call'];
+                profileCountEl.textContent = profileCount;
+                unqualifiedCountEl.textContent = unqualifiedCount;
+                acftFailCountEl.textContent = acftFailCount;
+
+                populatePlatoonFilter();
+                renderTraineeList();
+                checkForUpcomingAppointments(traineesData);
+                performDailyCheckIn();
+            }, (error) => {
+                console.error("Error fetching trainees:", error);
+                traineeList.innerHTML = `<p class="text-center text-red-500">Error loading data: ${error.message}</p>`;
+            });
+        };
+
+        const populatePlatoonFilter = () => {
+            platoonFilterEl.innerHTML = '<option value="All">All Platoons</option>';
+            const sortedPlatoons = Array.from(platoons).sort();
+            sortedPlatoons.forEach(platoon => {
+                const option = document.createElement('option');
+                option.value = platoon;
+                option.textContent = platoon;
+                platoonFilterEl.appendChild(option);
+            });
+        };
+
+        const renderTraineeList = () => {
+            const searchTerm = traineeSearchEl.value.toLowerCase();
+            const selectedPlatoon = platoonFilterEl.value;
+
+            let filteredTrainees = traineesData.filter(trainee => {
+                const nameMatch = trainee.name.toLowerCase().includes(searchTerm);
+                const platoonMatch = selectedPlatoon === 'All' || trainee.platoon === selectedPlatoon;
+                return nameMatch && platoonMatch;
+            });
+            
+            // Sort by platoon, then by name
+            filteredTrainees.sort((a, b) => {
+                if (a.platoon !== b.platoon) {
+                    return a.platoon.localeCompare(b.platoon);
+                }
+                return a.name.localeCompare(b.name);
+            });
+
+            traineeList.innerHTML = '';
+            if (filteredTrainees.length === 0) {
+                traineeList.innerHTML = '<p class="text-center text-gray-500">No matching trainees found.</p>';
+            } else {
+                filteredTrainees.forEach(trainee => {
+                    const traineeCard = createTraineeCard(trainee);
+                    traineeList.appendChild(traineeCard);
+                });
+            }
+        };
+        
+        traineeSearchEl.addEventListener('input', renderTraineeList);
+        platoonFilterEl.addEventListener('change', renderTraineeList);
+
+        // Create a trainee card element
+        const createTraineeCard = (trainee) => {
+            const card = document.createElement('div');
+            card.className = 'bg-gray-50 p-4 rounded-lg shadow-sm cursor-pointer hover:bg-gray-100 transition-colors flex justify-between items-center';
+            card.dataset.id = trainee.id;
+            card.innerHTML = `
+                <div>
+                    <h4 class="text-xl font-semibold text-gray-900">${trainee.name}</h4>
+                    <p class="text-sm text-gray-600">Platoon: ${trainee.platoon}</p>
+                </div>
+                <span class="px-3 py-1 text-sm font-medium rounded-full ${
+                    trainee.status === 'Present' ? 'bg-green-100 text-green-800' :
+                    trainee.status === 'Sick Call' ? 'bg-yellow-100 text-yellow-800' :
+                    trainee.status === 'On Leave' ? 'bg-blue-100 text-blue-800' :
+                    'bg-red-100 text-red-800'
+                }">${trainee.status}</span>
+            `;
+            card.addEventListener('click', () => showTraineeModal(trainee));
+            return card;
+        };
+
+        // Show/Hide Add Trainee Form
+        addTraineeBtn.addEventListener('click', () => {
+            addTraineeFormContainer.classList.remove('hidden');
+        });
+
+        cancelAddBtn.addEventListener('click', () => {
+            addTraineeFormContainer.classList.add('hidden');
+            traineeForm.reset();
+        });
+
+        // Add a new trainee to Firestore
+        traineeForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(traineeForm);
+            const name = formData.get('name').trim();
+            const platoon = formData.get('platoon').trim();
+            if (!name || !platoon) return;
+
+            try {
+                const traineesColRef = collection(db, `artifacts/${appId}/users/${userId}/trainees`);
+                const newTraineeData = {
+                    name,
+                    platoon,
+                    status: 'Present',
+                    location: '',
+                    history: JSON.stringify([{
+                        type: 'Added',
+                        details: 'Trainee added to the roster.',
+                        timestamp: new Date().toISOString()
+                    }]),
+                    profile: JSON.stringify({ restriction: '', endDate: '' }),
+                    appointments: JSON.stringify([]),
+                    fitness: JSON.stringify({ acftScore: '', runTime: '', rifleQual: '' }),
+                    counselingHistory: JSON.stringify([]),
+                    trainingEvents: JSON.stringify([])
+                };
+                await addDoc(traineesColRef, newTraineeData);
+                traineeForm.reset();
+                addTraineeFormContainer.classList.add('hidden');
+            } catch (error) {
+                console.error("Error adding trainee:", error);
+            }
+        });
+
+        // Show Trainee Modal for editing
+        const showTraineeModal = (trainee) => {
+            currentEditingTraineeId = trainee.id;
+            modalNameEl.textContent = trainee.name;
+            modalStatusEl.value = trainee.status;
+            traineeLocationEl.value = trainee.location || '';
+
+            // Populate fitness data
+            let fitnessData = { acftScore: '', runTime: '', rifleQual: '' };
+            try {
+                fitnessData = JSON.parse(trainee.fitness || '{}');
+            } catch (e) {
+                console.error("Failed to parse fitness data:", e);
+            }
+            acftScoreEl.value = fitnessData.acftScore || '';
+            runTimeEl.value = fitnessData.runTime || '';
+            rifleQualEl.value = fitnessData.rifleQual || '';
+
+            // Populate training events checklist
+            let completedEvents = [];
+            try {
+                completedEvents = JSON.parse(trainee.trainingEvents || '[]');
+            } catch (e) {
+                console.error("Failed to parse training events:", e);
+            }
+            trainingEventsListEl.innerHTML = globalTrainingEvents.map(event => `
+                <div class="flex items-center">
+                    <input type="checkbox" id="event-${event.id}" data-event-id="${event.id}" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" ${completedEvents.includes(event.id) ? 'checked' : ''}>
+                    <label for="event-${event.id}" class="ml-2 block text-sm text-gray-900">${event.name}</label>
+                </div>
+            `).join('');
+
+            // Populate counseling records
+            let counselingRecords = [];
+            try {
+                counselingRecords = JSON.parse(trainee.counselingHistory || '[]');
+            } catch (e) {
+                console.error("Failed to parse counseling history:", e);
+            }
+            counselingListEl.innerHTML = counselingRecords.map(record => `
+                <div class="p-2 bg-gray-100 rounded-lg text-sm flex justify-between items-center">
+                    <span>[${formatTimestamp(record.timestamp)}] ${record.details}</span>
+                    <button class="text-red-500 hover:text-red-700 ml-2 delete-counseling" data-timestamp="${record.timestamp}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm6 0a1 1 0 112 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            `).join('');
+            counselingListEl.querySelectorAll('.delete-counseling').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const timestamp = e.currentTarget.dataset.timestamp;
+                    const currentTrainee = traineesData.find(t => t.id === currentEditingTraineeId);
+                    let records = JSON.parse(currentTrainee.counselingHistory || '[]');
+                    records = records.filter(record => record.timestamp !== timestamp);
+                    currentTrainee.counselingHistory = JSON.stringify(records);
+                    showTraineeModal(currentTrainee);
+                });
+            });
+
+            // Populate profile data
+            let profileData = { restriction: '', endDate: '' };
+            try {
+                profileData = JSON.parse(trainee.profile || '{}');
+            } catch (e) {
+                console.error("Failed to parse profile data:", e);
+            }
+            profileRestrictionEl.value = profileData.restriction;
+            profileEndDateEl.value = profileData.endDate;
+            
+            // Populate appointments
+            let appointments = [];
+            try {
+                appointments = JSON.parse(trainee.appointments || '[]');
+            } catch(e) {
+                console.error("Failed to parse appointments:", e);
+            }
+            appointmentsListEl.innerHTML = appointments.map(app => `
+                <div class="flex items-center space-x-2 p-2 bg-gray-100 rounded-lg">
+                    <div class="flex-1">
+                        <span class="font-semibold">${formatDate(app.date)}:</span>
+                        <span>${app.description}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            // Populate history notes
+            let notesString = '';
+            try {
+                const history = JSON.parse(trainee.history || '[]');
+                history.forEach(item => {
+                    notesString += `[${formatTimestamp(item.timestamp)}] ${item.type}: ${item.details}\n`;
+                });
+            } catch (e) {
+                console.error("Failed to parse history notes:", e);
+                notesString = "Error loading history.";
+            }
+            modalNotesEl.value = notesString;
+
+            traineeModal.classList.remove('hidden');
+        };
+
+        // Add a new appointment to the modal's in-memory data
+        addAppointmentBtn.addEventListener('click', () => {
+            const date = newAppointmentDateEl.value;
+            const desc = newAppointmentDescEl.value.trim();
+            if (!date || !desc) return;
+            
+            const currentTrainee = traineesData.find(t => t.id === currentEditingTraineeId);
+            let appointments = JSON.parse(currentTrainee.appointments || '[]');
+            appointments.push({ date, description: desc });
+            
+            appointmentsListEl.innerHTML += `
+                <div class="flex items-center space-x-2 p-2 bg-gray-100 rounded-lg">
+                    <div class="flex-1">
+                        <span class="font-semibold">${formatDate(date)}:</span>
+                        <span>${desc}</span>
+                    </div>
+                </div>
+            `;
+            
+            newAppointmentDateEl.value = '';
+            newAppointmentDescEl.value = '';
+            
+            // Update the in-memory trainee data to be saved later
+            currentTrainee.appointments = JSON.stringify(appointments);
+        });
+
+        // Add a new counseling record to the modal's in-memory data
+        addCounselingBtn.addEventListener('click', () => {
+            const desc = newCounselingDescEl.value.trim();
+            if (!desc) return;
+            
+            const currentTrainee = traineesData.find(t => t.id === currentEditingTraineeId);
+            let records = JSON.parse(currentTrainee.counselingHistory || '[]');
+            const timestamp = new Date().toISOString();
+            records.push({ timestamp, details: desc });
+            
+            counselingListEl.innerHTML += `
+                <div class="p-2 bg-gray-100 rounded-lg text-sm flex justify-between items-center">
+                    <span>[${formatTimestamp(timestamp)}] ${desc}</span>
+                    <button class="text-red-500 hover:text-red-700 ml-2 delete-counseling" data-timestamp="${timestamp}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm6 0a1 1 0 112 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            `;
+            
+            newCounselingDescEl.value = '';
+            
+            // Update the in-memory trainee data to be saved later
+            currentTrainee.counselingHistory = JSON.stringify(records);
+        });
+
+
+        // Close Trainee Modal
+        closeModalBtn.addEventListener('click', () => {
+            traineeModal.classList.add('hidden');
+            currentEditingTraineeId = null;
+        });
+
+        // Update Trainee details
+        updateTraineeBtn.addEventListener('click', async () => {
+            if (!currentEditingTraineeId) return;
+            
+            const currentTrainee = traineesData.find(t => t.id === currentEditingTraineeId);
+            const newStatus = modalStatusEl.value;
+            const newLocation = traineeLocationEl.value.trim();
+            const newNotes = modalNotesEl.value;
+            
+            const profile = {
+                restriction: profileRestrictionEl.value.trim(),
+                endDate: profileEndDateEl.value
+            };
+
+            const fitness = {
+                acftScore: acftScoreEl.value,
+                runTime: runTimeEl.value.trim(),
+                rifleQual: rifleQualEl.value
+            };
+            
+            const completedTrainingEvents = [];
+            trainingEventsListEl.querySelectorAll('input[type="checkbox"]:checked').forEach(checkbox => {
+                completedTrainingEvents.push(checkbox.dataset.eventId);
+            });
+            
+            // Re-parse the history and add new entry
+            let history = [];
+            try {
+                history = JSON.parse(currentTrainee.history || '[]');
+            } catch(e) {
+                console.error("Failed to parse history during update:", e);
+            }
+            history.push({
+                type: 'Updated',
+                details: 'Data updated via modal.',
+                timestamp: new Date().toISOString()
+            });
+
+            try {
+                const traineeDocRef = doc(db, `artifacts/${appId}/users/${userId}/trainees/${currentEditingTraineeId}`);
+                await setDoc(traineeDocRef, {
+                    status: newStatus,
+                    location: newLocation,
+                    notes: newNotes,
+                    history: JSON.stringify(history),
+                    profile: JSON.stringify(profile),
+                    appointments: currentTrainee.appointments,
+                    fitness: JSON.stringify(fitness),
+                    counselingHistory: currentTrainee.counselingHistory,
+                    trainingEvents: JSON.stringify(completedTrainingEvents),
+                    updatedAt: new Date()
+                }, { merge: true });
+                traineeModal.classList.add('hidden');
+            } catch (error) {
+                console.error("Error updating trainee:", error);
+            }
+        });
+        
+        // Delete Trainee
+        deleteTraineeBtn.addEventListener('click', async () => {
+            if (!currentEditingTraineeId) return;
+            showConfirmation("Delete Trainee", "Are you sure you want to delete this trainee? This action cannot be undone.", async () => {
+                try {
+                    const traineeDocRef = doc(db, `artifacts/${appId}/users/${userId}/trainees/${currentEditingTraineeId}`);
+                    await deleteDoc(traineeDocRef);
+                    traineeModal.classList.add('hidden');
+                    currentEditingTraineeId = null;
+                } catch (error) {
+                    console.error("Error deleting trainee:", error);
+                }
+            });
+        });
+
+        // Daily Check-in Modal Logic
+        skipCheckInBtn.addEventListener('click', async () => {
+            const userDocRef = doc(db, `artifacts/${appId}/users/${userId}/_metadata/app`);
+            await setDoc(userDocRef, { lastDailyCheckIn: new Date().toISOString().slice(0, 10) }, { merge: true });
+            dailyCheckInModal.classList.add('hidden');
+        });
+
+        submitCheckInBtn.addEventListener('click', async () => {
+            const traineeUpdates = {};
+            const selectElements = dailyCheckInListEl.querySelectorAll('.status-select');
+            selectElements.forEach(selectEl => {
+                const traineeId = selectEl.dataset.id;
+                const newStatus = selectEl.value;
+                const trainee = traineesData.find(t => t.id === traineeId);
+                
+                if (trainee && trainee.status !== newStatus) {
+                    let history = [];
+                    try {
+                        history = JSON.parse(trainee.history || '[]');
+                    } catch(e) {
+                        console.error("Failed to parse history during check-in:", e);
+                    }
+                    history.push({
+                        type: 'Status Update (Daily Check-in)',
+                        details: `Status changed from '${trainee.status}' to '${newStatus}'.`,
+                        timestamp: new Date().toISOString()
+                    });
+                    
+                    traineeUpdates[traineeId] = {
+                        status: newStatus,
+                        history: JSON.stringify(history)
+                    };
+                }
+            });
+
+            // Batch updates to Firestore
+            for (const id in traineeUpdates) {
+                try {
+                    const traineeDocRef = doc(db, `artifacts/${appId}/users/${userId}/trainees/${id}`);
+                    await setDoc(traineeDocRef, traineeUpdates[id], { merge: true });
+                } catch (error) {
+                    console.error(`Error updating trainee ${id} during check-in:`, error);
+                }
+            }
+
+            const userDocRef = doc(db, `artifacts/${appId}/users/${userId}/_metadata/app`);
+            await setDoc(userDocRef, { lastDailyCheckIn: new Date().toISOString().slice(0, 10) }, { merge: true });
+            dailyCheckInModal.classList.add('hidden');
+        });
+
+        // Bulk Add Trainees Logic
+        bulkAddBtn.addEventListener('click', () => {
+            bulkAddModal.classList.remove('hidden');
+        });
+
+        closeBulkAddModalBtn.addEventListener('click', () => {
+            bulkAddModal.classList.add('hidden');
+            bulkTraineeInput.value = '';
+        });
+
+        bulkAddCancelBtn.addEventListener('click', () => {
+            bulkAddModal.classList.add('hidden');
+            bulkTraineeInput.value = '';
+        });
+
+        bulkAddSaveBtn.addEventListener('click', async () => {
+            const lines = bulkTraineeInput.value.trim().split('\n');
+            const newTrainees = [];
+            lines.forEach(line => {
+                const parts = line.split(',');
+                if (parts.length >= 2) {
+                    const name = parts[0].trim();
+                    const platoon = parts.slice(1).join(',').trim();
+                    if (name && platoon) {
+                        newTrainees.push({ name, platoon });
+                    }
+                }
+            });
+
+            if (newTrainees.length > 0) {
+                try {
+                    const traineesColRef = collection(db, `artifacts/${appId}/users/${userId}/trainees`);
+                    for (const trainee of newTrainees) {
+                        const newTraineeData = {
+                            name: trainee.name,
+                            platoon: trainee.platoon,
+                            status: 'Present',
+                            location: '',
+                            history: JSON.stringify([{
+                                type: 'Added',
+                                details: 'Trainee added via bulk upload.',
+                                timestamp: new Date().toISOString()
+                            }]),
+                            profile: JSON.stringify({ restriction: '', endDate: '' }),
+                            appointments: JSON.stringify([]),
+                            fitness: JSON.stringify({ acftScore: '', runTime: '', rifleQual: '' }),
+                            counselingHistory: JSON.stringify([]),
+                            trainingEvents: JSON.stringify([])
+                        };
+                        await addDoc(traineesColRef, newTraineeData);
+                    }
+                    bulkAddModal.classList.add('hidden');
+                    bulkTraineeInput.value = '';
+                } catch (error) {
+                    console.error("Error adding trainees in bulk:", error);
+                    // Handle error with a custom modal if needed
+                }
+            }
+        });
+
+        // Manage Training Events Modal Logic
+        manageTrainingBtn.addEventListener('click', () => {
+            manageTrainingModal.classList.remove('hidden');
+            renderTrainingEventsManagementList();
+        });
+
+        closeManageTrainingBtn.addEventListener('click', () => {
+            manageTrainingModal.classList.add('hidden');
+        });
+        
+        // Add new training event
+        addTrainingEventBtn.addEventListener('click', async () => {
+            const newEventName = newTrainingEventNameEl.value.trim();
+            if (!newEventName) return;
+
+            try {
+                const eventsColRef = collection(db, `artifacts/${appId}/users/${userId}/training_events`);
+                await addDoc(eventsColRef, { name: newEventName });
+                newTrainingEventNameEl.value = '';
+            } catch (error) {
+                console.error("Error adding training event:", error);
+            }
+        });
+        
+        const renderTrainingEventsManagementList = () => {
+            trainingEventsManagementListEl.innerHTML = globalTrainingEvents.map(event => `
+                <div class="flex justify-between items-center p-2 bg-gray-50 rounded-lg">
+                    <span>${event.name}</span>
+                    <button class="text-red-500 hover:text-red-700 ml-2 delete-event-btn" data-event-id="${event.id}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm6 0a1 1 0 112 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            `).join('');
+
+            trainingEventsManagementListEl.querySelectorAll('.delete-event-btn').forEach(button => {
+                button.addEventListener('click', async (e) => {
+                    const eventId = e.currentTarget.dataset.eventId;
+                    showConfirmation("Delete Training Event", "Are you sure you want to delete this training event? This action cannot be undone.", async () => {
+                        try {
+                            const eventDocRef = doc(db, `artifacts/${appId}/users/${userId}/training_events/${eventId}`);
+                            await deleteDoc(eventDocRef);
+                        } catch (error) {
+                            console.error("Error deleting training event:", error);
+                        }
+                    });
+                });
+            });
+        };
+
+    </script>
+</body>
+</html>
