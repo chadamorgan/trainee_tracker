@@ -58,15 +58,6 @@
                 <button id="bulkAddBtn" class="w-full md:w-auto px-6 py-2 bg-gray-600 text-white font-semibold rounded-full shadow-md hover:bg-gray-700 transition-all">
                     Bulk Add
                 </button>
-                <button id="manageTrainingBtn" class="w-full md:w-auto px-6 py-2 bg-blue-600 text-white font-semibold rounded-full shadow-md hover:bg-blue-700 transition-all">
-                    Manage Events
-                </button>
-                <button id="viewTrainingStatusBtn" class="w-full md:w-auto px-6 py-2 bg-green-600 text-white font-semibold rounded-full shadow-md hover:bg-green-700 transition-all">
-                    Events
-                </button>
-                <button id="manageTasksBtn" class="w-full md:w-auto px-6 py-2 bg-purple-600 text-white font-semibold rounded-full shadow-md hover:bg-purple-700 transition-all">
-                    Platoon Tasks
-                </button>
             </div>
         </div>
 
@@ -102,6 +93,15 @@
                     <p class="text-sm font-medium text-gray-600">ACFT Fail</p>
                     <p id="acftFailCount" class="text-2xl font-bold text-red-600 mt-1">0</p>
                 </div>
+                <!-- New Dashboard Cards for Training Events and Tasks -->
+                <div class="p-3 bg-white rounded-lg shadow-md text-center cursor-pointer hover:bg-gray-100 transition-colors" id="openEventsModal">
+                    <p class="text-sm font-medium text-gray-600">Training Events</p>
+                    <p id="totalEventsCount" class="text-2xl font-bold text-blue-600 mt-1">0</p>
+                </div>
+                <div class="p-3 bg-white rounded-lg shadow-md text-center cursor-pointer hover:bg-gray-100 transition-colors" id="openTasksModal">
+                    <p class="text-sm font-medium text-gray-600">Platoon Tasks</p>
+                    <p id="outstandingTasksCount" class="text-2xl font-bold text-purple-600 mt-1">0</p>
+                </div>
             </div>
             <div class="mt-4">
                 <h4 class="text-md font-semibold text-gray-800">Upcoming Appointments:</h4>
@@ -113,12 +113,6 @@
                 <h4 class="text-md font-semibold text-gray-800">Priority List:</h4>
                 <ul id="highPriorityIssuesList" class="mt-2 space-y-1 text-sm text-gray-600">
                     <!-- High priority notes will be populated here -->
-                </ul>
-            </div>
-             <div class="mt-4">
-                <h4 class="text-md font-semibold text-gray-800">Platoon Tasks:</h4>
-                <ul id="platoonTasksList" class="mt-2 space-y-1 text-sm text-gray-600">
-                    <!-- Tasks will be populated here -->
                 </ul>
             </div>
         </div>
@@ -352,14 +346,16 @@
         </div>
     </div>
 
-    <!-- Manage Training Events Modal -->
-    <div id="manageTrainingModal" class="modal fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900 bg-opacity-75 hidden">
+    <!-- Manage Events Modal (Consolidated) -->
+    <div id="manageEventsModal" class="modal fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900 bg-opacity-75 hidden">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-auto p-6 md:p-8 flex flex-col h-[90vh]">
             <div class="flex justify-between items-center pb-4 border-b flex-shrink-0">
-                <h3 class="text-2xl font-bold text-gray-900">Manage Training Events</h3>
-                <button id="closeManageTrainingBtn" class="text-gray-400 hover:text-gray-600 font-bold text-2xl">&times;</button>
+                <h3 class="text-2xl font-bold text-gray-900">Training Events</h3>
+                <button id="closeEventsModalBtn" class="text-gray-400 hover:text-gray-600 font-bold text-2xl">&times;</button>
             </div>
-            <div class="py-4 space-y-4 flex-1 overflow-y-auto min-h-0">
+            <div class="py-4 space-y-6 flex-1 overflow-y-auto min-h-0">
+                
+                <!-- Section 1: Manage Events (Add/Delete) -->
                 <div class="space-y-2">
                     <h4 class="text-lg font-bold text-gray-800">Define Training Events</h4>
                     <div class="flex space-x-2">
@@ -370,6 +366,8 @@
                         <!-- Events will be populated here -->
                     </div>
                 </div>
+
+                <!-- Section 2: Update Events Status -->
                 <div class="space-y-2">
                     <h4 class="text-lg font-bold text-gray-800">Update Event Status by Platoon</h4>
                     <p class="text-sm text-gray-600">Select an event and platoon. Deselect trainees who did NOT complete the event.</p>
@@ -389,22 +387,10 @@
                         <!-- Trainees will be injected here for update -->
                     </div>
                 </div>
-            </div>
-            <div class="flex justify-end pt-4 border-t flex-shrink-0">
-                <button id="updateTraineeEventsBtn" class="px-4 py-2 text-sm font-semibold rounded-lg text-white bg-green-600 hover:bg-green-700">Update Selected Trainees</button>
-            </div>
-        </div>
-    </div>
 
-    <!-- View Training Status Modal -->
-    <div id="viewTrainingStatusModal" class="modal fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900 bg-opacity-75 hidden">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-auto p-6 md:p-8 flex flex-col h-[90vh]">
-            <div class="flex justify-between items-center pb-4 border-b flex-shrink-0">
-                <h3 class="text-2xl font-bold text-gray-900">Event Status</h3>
-                <button id="closeViewTrainingStatusBtn" class="text-gray-400 hover:text-gray-600 font-bold text-2xl">&times;</button>
-            </div>
-            <div class="py-4 space-y-4 flex-1 overflow-y-auto min-h-0">
+                <!-- Section 3: View Event Status -->
                 <div class="space-y-2">
+                    <h4 class="text-lg font-bold text-gray-800">View Event Status</h4>
                     <p class="text-sm text-gray-600">Select a training event and platoon to view status.</p>
                     <div class="flex space-x-2">
                         <select id="viewEventSelector" class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
@@ -414,10 +400,14 @@
                             <option value="All">All Platoons</option>
                         </select>
                     </div>
+                    <div id="traineeEventViewList" class="space-y-2 max-h-48 overflow-y-auto mt-4">
+                        <!-- Trainees will be injected here for viewing status -->
+                    </div>
                 </div>
-                <div id="traineeEventViewList" class="space-y-2 mt-4">
-                    <!-- Trainees will be injected here for viewing status -->
-                </div>
+
+            </div>
+            <div class="flex justify-end pt-4 border-t flex-shrink-0">
+                <button id="updateTraineeEventsBtn" class="px-4 py-2 text-sm font-semibold rounded-lg text-white bg-green-600 hover:bg-green-700">Update Selected Trainees</button>
             </div>
         </div>
     </div>
@@ -434,14 +424,20 @@
                     <h4 class="text-lg font-bold text-gray-800">Add New Task</h4>
                     <div class="space-y-2">
                         <textarea id="newTaskText" rows="3" placeholder="Enter task description" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
-                        <div class="flex items-center space-x-2">
-                            <label for="newTaskPriority" class="text-sm font-medium text-gray-700">Priority:</label>
-                            <select id="newTaskPriority" class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                <option value="Low">Low</option>
-                                <option value="Medium">Medium</option>
-                                <option value="High">High</option>
-                            </select>
-                            <button id="addTaskBtn" class="px-4 py-2 text-sm font-semibold rounded-lg text-white bg-blue-600 hover:bg-blue-700 whitespace-nowrap">Add Task</button>
+                        <div class="flex flex-col sm:flex-row items-end sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
+                            <div class="flex-1">
+                                <label for="newTaskPriority" class="text-sm font-medium text-gray-700">Priority:</label>
+                                <select id="newTaskPriority" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    <option value="Low">Low</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="High">High</option>
+                                </select>
+                            </div>
+                            <div class="flex-1">
+                                <label for="newTaskDueDate" class="text-sm font-medium text-gray-700">Due Date:</label>
+                                <input type="date" id="newTaskDueDate" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            </div>
+                            <button id="addTaskBtn" class="w-full sm:w-auto px-4 py-2 text-sm font-semibold rounded-lg text-white bg-blue-600 hover:bg-blue-700 whitespace-nowrap">Add Task</button>
                         </div>
                     </div>
                 </div>
@@ -457,6 +453,7 @@
             </div>
         </div>
     </div>
+
 
     <!-- Firebase SDKs -->
     <script type="module">
@@ -543,9 +540,9 @@
         const skipCheckInBtn = document.getElementById('skipCheckInBtn');
         const submitCheckInBtn = document.getElementById('submitCheckInBtn');
 
-        const manageTrainingModal = document.getElementById('manageTrainingModal');
-        const manageTrainingBtn = document.getElementById('manageTrainingBtn');
-        const closeManageTrainingBtn = document.getElementById('closeManageTrainingBtn');
+        const manageEventsModal = document.getElementById('manageEventsModal');
+        const openEventsModalBtn = document.getElementById('openEventsModal');
+        const closeEventsModalBtn = document.getElementById('closeEventsModalBtn');
         const newTrainingEventNameEl = document.getElementById('newTrainingEventName');
         const addTrainingEventBtn = document.getElementById('addTrainingEventBtn');
         const trainingEventsManagementListEl = document.getElementById('trainingEventsManagementList');
@@ -554,6 +551,10 @@
         const traineeEventUpdateListEl = document.getElementById('traineeEventUpdateList');
         const updateTraineeEventsBtn = document.getElementById('updateTraineeEventsBtn');
         const selectAllTraineesCheckbox = document.getElementById('selectAllTrainees');
+        const viewEventSelectorEl = document.getElementById('viewEventSelector');
+        const viewPlatoonSelectorEl = document.getElementById('viewPlatoonSelector');
+        const traineeEventViewListEl = document.getElementById('traineeEventViewList');
+
 
         const traineeSearchEl = document.getElementById('traineeSearch');
         const platoonFilterEl = document.getElementById('platoonFilter');
@@ -570,20 +571,15 @@
         const newNotePriorityEl = document.getElementById('newNotePriority');
         const addNoteBtn = document.getElementById('addNoteBtn');
         
-        const viewTrainingStatusBtn = document.getElementById('viewTrainingStatusBtn');
-        const viewTrainingStatusModal = document.getElementById('viewTrainingStatusModal');
-        const closeViewTrainingStatusBtn = document.getElementById('closeViewTrainingStatusBtn');
-        const viewEventSelectorEl = document.getElementById('viewEventSelector');
-        const viewPlatoonSelectorEl = document.getElementById('viewPlatoonSelector');
-        const traineeEventViewListEl = document.getElementById('traineeEventViewList');
-
-        const manageTasksBtn = document.getElementById('manageTasksBtn');
+        const openTasksModalBtn = document.getElementById('openTasksModal');
         const manageTasksModal = document.getElementById('manageTasksModal');
         const closeManageTasksBtn = document.getElementById('closeManageTasksBtn');
         const newTaskTextEl = document.getElementById('newTaskText');
         const newTaskPriorityEl = document.getElementById('newTaskPriority');
+        const newTaskDueDateEl = document.getElementById('newTaskDueDate');
         const addTaskBtn = document.getElementById('addTaskBtn');
         const tasksManagementListEl = document.getElementById('tasksManagementList');
+        const saveTasksBtn = document.getElementById('saveTasksBtn');
 
         let currentEditingTraineeId = null;
         let platoons = new Set();
@@ -643,6 +639,13 @@
             }
             return new Date().toLocaleString();
         };
+
+        const isToday = (someDate) => {
+            const today = new Date();
+            return someDate.getDate() == today.getDate() &&
+                someDate.getMonth() == today.getMonth() &&
+                someDate.getFullYear() == today.getFullYear();
+        }
 
         // Custom confirmation modal logic
         const showConfirmation = (title, message, onConfirm) => {
@@ -749,27 +752,36 @@
         };
         
         const updateDashboardTasks = () => {
-             // Sort tasks by priority
-            platoonTasks.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+            // Filter out completed tasks and sort
+            const outstandingTasks = platoonTasks.filter(task => !task.completed);
+            outstandingTasksCount.textContent = outstandingTasks.length;
+            
+            outstandingTasks.sort((a, b) => {
+                const dueDateA = a.dueDate ? new Date(a.dueDate).getTime() : Infinity;
+                const dueDateB = b.dueDate ? new Date(b.dueDate).getTime() : Infinity;
+                
+                if (dueDateA !== dueDateB) return dueDateA - dueDateB;
+                return priorityOrder[a.priority] - priorityOrder[b.priority];
+            });
 
             platoonTasksListEl.innerHTML = '';
-            if (platoonTasks.length > 0) {
-                platoonTasks.forEach(task => {
+            if (outstandingTasks.length > 0) {
+                outstandingTasks.forEach(task => {
                     const listItem = document.createElement('li');
-                    const isCompletedClass = task.completed ? 'line-through text-gray-500' : '';
+                    const dueText = task.dueDate ? ` (Due: ${formatDate(task.dueDate)})` : '';
                     listItem.innerHTML = `
                          <span class="px-2 py-0.5 text-xs font-semibold rounded-full ${
                             task.priority === 'High' ? 'bg-red-200 text-red-800' :
                             task.priority === 'Medium' ? 'bg-yellow-200 text-yellow-800' :
                             'bg-gray-200 text-gray-800'
                         }">${task.priority}</span>
-                        <span class="ml-2 ${isCompletedClass}">${task.text}</span>
+                        <span class="ml-2">${task.text}${dueText}</span>
                     `;
                     platoonTasksListEl.appendChild(listItem);
                 });
             } else {
                 const listItem = document.createElement('li');
-                listItem.textContent = 'No platoon tasks at this time.';
+                listItem.textContent = 'No outstanding platoon tasks at this time.';
                 platoonTasksListEl.appendChild(listItem);
             }
         };
@@ -860,6 +872,7 @@
                 snapshot.forEach(doc => {
                     globalTrainingEvents.push({ id: doc.id, ...doc.data() });
                 });
+                totalEventsCount.textContent = globalTrainingEvents.length;
                 populateTrainingEventSelectors();
             }, (error) => {
                 console.error("Error fetching global training events:", error);
@@ -1567,15 +1580,15 @@
         });
 
         // Manage Training Events Modal Logic
-        manageTrainingBtn.addEventListener('click', () => {
-            manageTrainingModal.classList.remove('hidden');
+        openEventsModalBtn.addEventListener('click', () => {
+            manageEventsModal.classList.remove('hidden');
             document.body.classList.add('modal-open');
             renderTrainingEventsManagementList();
             renderTraineeEventUpdateList();
         });
 
-        closeManageTrainingBtn.addEventListener('click', () => {
-            manageTrainingModal.classList.add('hidden');
+        closeEventsModalBtn.addEventListener('click', () => {
+            manageEventsModal.classList.add('hidden');
             document.body.classList.remove('modal-open');
         });
         
@@ -1716,19 +1729,7 @@
                     }
                 }
             }
-            manageTrainingModal.classList.add('hidden');
-            document.body.classList.remove('modal-open');
-        });
-
-        // View Training Status Modal Logic
-        viewTrainingStatusBtn.addEventListener('click', () => {
-            viewTrainingStatusModal.classList.remove('hidden');
-            document.body.classList.add('modal-open');
-            renderTraineeEventViewList();
-        });
-
-        closeViewTrainingStatusBtn.addEventListener('click', () => {
-            viewTrainingStatusModal.classList.add('hidden');
+            manageEventsModal.classList.add('hidden');
             document.body.classList.remove('modal-open');
         });
 
@@ -1779,7 +1780,7 @@
         viewPlatoonSelectorEl.addEventListener('change', renderTraineeEventViewList);
 
         // Platoon Tasks Logic
-        manageTasksBtn.addEventListener('click', () => {
+        openTasksModalBtn.addEventListener('click', () => {
             manageTasksModal.classList.remove('hidden');
             document.body.classList.add('modal-open');
         });
@@ -1792,6 +1793,7 @@
         addTaskBtn.addEventListener('click', async () => {
             const text = newTaskTextEl.value.trim();
             const priority = newTaskPriorityEl.value;
+            const dueDate = newTaskDueDateEl.value;
             if (!text) return;
 
             try {
@@ -1799,27 +1801,35 @@
                 const newTaskData = {
                     text,
                     priority,
+                    dueDate: dueDate || null,
                     completed: false,
                     createdAt: new Date().toISOString()
                 };
                 await addDoc(tasksColRef, newTaskData);
                 newTaskTextEl.value = '';
                 newTaskPriorityEl.value = 'Low';
+                newTaskDueDateEl.value = '';
             } catch (error) {
                 console.error("Error adding task:", error);
             }
         });
 
         const renderTasksManagementList = () => {
-            // Sort tasks by priority and then by completion status
+            // Sort tasks by due date, then by priority, then by completion status
             platoonTasks.sort((a, b) => {
+                const dueDateA = a.dueDate ? new Date(a.dueDate).getTime() : Infinity;
+                const dueDateB = b.dueDate ? new Date(b.dueDate).getTime() : Infinity;
+                
+                if (dueDateA !== dueDateB) return dueDateA - dueDateB;
+                
                 const priorityA = priorityOrder[a.priority];
                 const priorityB = priorityOrder[b.priority];
+                if (priorityA !== priorityB) return priorityA - priorityB;
+                
                 const completedA = a.completed ? 1 : 0;
                 const completedB = b.completed ? 1 : 0;
-                
                 if (completedA !== completedB) return completedA - completedB;
-                if (priorityA !== priorityB) return priorityA - priorityB;
+                
                 return new Date(a.createdAt) - new Date(b.createdAt);
             });
             
@@ -1842,6 +1852,7 @@
                             'bg-gray-200 text-gray-800'
                         }">${task.priority}</span>
                         <span class="ml-2 ${isCompletedClass}">${task.text}</span>
+                        ${task.dueDate ? `<span class="ml-2 text-xs text-gray-500">Due: ${formatDate(task.dueDate)}</span>` : ''}
                     </div>
                     <button class="text-red-500 hover:text-red-700 delete-task-btn" data-task-id="${task.id}">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
