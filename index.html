@@ -58,6 +58,9 @@
                 <button id="bulkAddBtn" class="w-full md:w-auto px-6 py-2 bg-gray-600 text-white font-semibold rounded-full shadow-md hover:bg-gray-700 transition-all">
                     Bulk Add
                 </button>
+                <button id="resetAppBtn" class="w-full md:w-auto px-6 py-2 bg-red-600 text-white font-semibold rounded-full shadow-md hover:bg-red-700 transition-all">
+                    Reset App
+                </button>
             </div>
         </div>
 
@@ -459,7 +462,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, addDoc, setDoc, deleteDoc, onSnapshot, collection, query, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, addDoc, setDoc, deleteDoc, onSnapshot, collection, query, getDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
         // Firestore debugging
@@ -496,6 +499,8 @@
         const dashboardCards = document.querySelectorAll('[data-filter]');
 
         const addTraineeBtn = document.getElementById('addTraineeBtn');
+        const bulkAddBtn = document.getElementById('bulkAddBtn');
+        const resetAppBtn = document.getElementById('resetAppBtn');
         const addTraineeFormContainer = document.getElementById('addTraineeFormContainer');
         const cancelAddBtn = document.getElementById('cancelAddBtn');
         const traineeForm = document.getElementById('traineeForm');
@@ -559,7 +564,6 @@
         const traineeSearchEl = document.getElementById('traineeSearch');
         const platoonFilterEl = document.getElementById('platoonFilter');
 
-        const bulkAddBtn = document.getElementById('bulkAddBtn');
         const bulkAddModal = document.getElementById('bulkAddModal');
         const closeBulkAddModalBtn = document.getElementById('closeBulkAddModalBtn');
         const bulkAddCancelBtn = document.getElementById('bulkAddCancelBtn');
@@ -1890,6 +1894,42 @@
                 });
             });
         };
+        
+        // --- App Reset Logic ---
+        const resetAllData = async () => {
+            if (!userId) return;
+
+            const collectionsToClear = [
+                `artifacts/${traineeAppId}/users/${userId}/trainees`,
+                `artifacts/${traineeAppId}/users/${userId}/training_events`,
+                `artifacts/${traineeAppId}/users/${userId}/tasks`
+            ];
+
+            try {
+                for (const colPath of collectionsToClear) {
+                    const colRef = collection(db, colPath);
+                    const docs = await getDocs(colRef);
+                    const deletePromises = docs.docs.map(docToDelete => deleteDoc(docToDelete.ref));
+                    await Promise.all(deletePromises);
+                }
+
+                // Reset metadata document
+                const userDocRef = doc(db, `artifacts/${traineeAppId}/users/${userId}/_metadata/app`);
+                await setDoc(userDocRef, { lastDailyCheckIn: null }, { merge: true });
+
+            } catch (error) {
+                console.error("Error resetting app data:", error);
+                // You could add a custom modal here to inform the user of the error.
+            }
+        };
+
+        resetAppBtn.addEventListener('click', () => {
+            showConfirmation(
+                "Reset All App Data",
+                "Are you sure you want to reset the app? This will permanently delete all trainees, events, and tasks. This action cannot be undone.",
+                resetAllData
+            );
+        });
 
     </script>
 </body>
