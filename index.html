@@ -58,6 +58,9 @@
                 <button id="bulkAddBtn" class="w-full md:w-auto px-6 py-2 bg-gray-600 text-white font-semibold rounded-full shadow-md hover:bg-gray-700 transition-all">
                     Bulk Add
                 </button>
+                <button id="manageTrainingBtn" class="w-full md:w-auto px-6 py-2 bg-blue-600 text-white font-semibold rounded-full shadow-md hover:bg-blue-700 transition-all">
+                    Manage Events
+                </button>
             </div>
         </div>
 
@@ -179,7 +182,6 @@
                 <div class="space-y-4">
                     <div class="flex justify-between items-center">
                         <h4 class="text-lg font-bold text-gray-800">Training & Fitness</h4>
-                        <button id="manageTrainingBtn" class="px-3 py-1 text-xs font-semibold rounded-full bg-gray-200 hover:bg-gray-300">Manage Events</button>
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -367,6 +369,10 @@
                             <option value="All">All Platoons</option>
                         </select>
                     </div>
+                    <div class="mt-4 flex items-center">
+                        <input type="checkbox" id="selectAllTrainees" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                        <label for="selectAllTrainees" class="ml-2 block text-sm font-medium text-gray-900">Select All Trainees</label>
+                    </div>
                     <div id="traineeEventUpdateList" class="space-y-2 max-h-48 overflow-y-auto mt-4">
                         <!-- Trainees will be injected here for update -->
                     </div>
@@ -472,6 +478,7 @@
         const updatePlatoonSelectorEl = document.getElementById('updatePlatoonSelector');
         const traineeEventUpdateListEl = document.getElementById('traineeEventUpdateList');
         const updateTraineeEventsBtn = document.getElementById('updateTraineeEventsBtn');
+        const selectAllTraineesCheckbox = document.getElementById('selectAllTrainees');
 
 
         const traineeSearchEl = document.getElementById('traineeSearch');
@@ -823,13 +830,20 @@
             // Populate update training platoon filter
             const currentUpdateFilter = updatePlatoonSelectorEl.value;
             updatePlatoonSelectorEl.innerHTML = '<option value="All">Entire Company Roster</option>';
-             sortedPlatoons.forEach(platoon => {
-                const option = document.createElement('option');
-                option.value = platoon;
-                option.textContent = platoon;
-                updatePlatoonSelectorEl.appendChild(option);
-            });
-            updatePlatoonSelectorEl.value = currentUpdateFilter;
+             if (sortedPlatoons.length > 0) {
+                 sortedPlatoons.forEach(platoon => {
+                    const option = document.createElement('option');
+                    option.value = platoon;
+                    option.textContent = platoon;
+                    updatePlatoonSelectorEl.appendChild(option);
+                 });
+                 // Select the first platoon by default
+                 if (currentUpdateFilter === 'All') {
+                    updatePlatoonSelectorEl.value = sortedPlatoons[0];
+                 } else {
+                    updatePlatoonSelectorEl.value = currentUpdateFilter;
+                 }
+            }
         };
 
         const populateTrainingEventSelectors = () => {
@@ -1415,6 +1429,7 @@
             manageTrainingModal.classList.remove('hidden');
             document.body.classList.add('modal-open');
             renderTrainingEventsManagementList();
+            renderTraineeEventUpdateList();
         });
 
         closeManageTrainingBtn.addEventListener('click', () => {
@@ -1472,16 +1487,18 @@
                 traineeEventUpdateListEl.innerHTML = '<p class="text-center text-gray-500">Please select a training event.</p>';
                 return;
             }
-
+            
             let filteredTrainees = traineesData;
             if (selectedPlatoon !== 'All') {
                 filteredTrainees = traineesData.filter(trainee => trainee.platoon === selectedPlatoon);
             }
-            
+
             if (filteredTrainees.length === 0) {
                  traineeEventUpdateListEl.innerHTML = '<p class="text-center text-gray-500">No trainees found for this platoon.</p>';
                  return;
             }
+
+            filteredTrainees.sort((a, b) => a.name.localeCompare(b.name));
 
             filteredTrainees.forEach(trainee => {
                 let completedEvents = [];
@@ -1496,7 +1513,7 @@
                 traineeItem.className = 'flex items-center space-x-2 p-2 bg-gray-50 rounded-lg';
                 traineeItem.innerHTML = `
                     <input type="checkbox" id="update-event-${trainee.id}" data-trainee-id="${trainee.id}" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" ${hasCompleted ? 'checked' : ''}>
-                    <label for="update-event-${trainee.id}" class="block text-sm text-gray-900 flex-1">${trainee.name} - ${trainee.platoon}</label>
+                    <label for="update-event-${trainee.id}" class="block text-sm text-gray-900 flex-1">${trainee.name}</label>
                 `;
                 traineeEventUpdateListEl.appendChild(traineeItem);
             });
@@ -1505,10 +1522,17 @@
         updateEventSelectorEl.addEventListener('change', renderTraineeEventUpdateList);
         updatePlatoonSelectorEl.addEventListener('change', renderTraineeEventUpdateList);
 
+        selectAllTraineesCheckbox.addEventListener('change', (e) => {
+            const isChecked = e.target.checked;
+            traineeEventUpdateListEl.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = isChecked;
+            });
+        });
+
         updateTraineeEventsBtn.addEventListener('click', async () => {
             const selectedEventId = updateEventSelectorEl.value;
             if (!selectedEventId) {
-                // Show custom alert modal
+                showConfirmation("No Event Selected", "Please select a training event to update.", () => {});
                 return;
             }
 
