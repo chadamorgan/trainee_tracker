@@ -1106,7 +1106,8 @@
             const selectedPlatoon = platoonFilterEl.value;
 
             let filteredTrainees = traineesData.filter(trainee => {
-                const nameMatch = trainee.name.toLowerCase().includes(searchTerm);
+                const fullName = `${trainee.name}`.toLowerCase();
+                const nameMatch = fullName.includes(searchTerm);
                 const platoonMatch = selectedPlatoon === 'All' || trainee.platoon === selectedPlatoon;
                 
                 let statusMatch = true;
@@ -1661,9 +1662,12 @@
                 if (parts.length >= 2) {
                     const traineeInfo = parts[0].trim().split(',').map(s => s.trim());
                     const platoon = parts[1].trim();
+                    
+                    if (traineeInfo.length >= 3) {
+                        const rank = traineeInfo.shift();
+                        let gender = traineeInfo.pop();
+                        const name = traineeInfo.join(', ');
 
-                    if (traineeInfo.length === 3 && traineeInfo[0] && traineeInfo[1] && traineeInfo[2] && platoon) {
-                        let [rank, name, gender] = traineeInfo;
                         if (gender.toUpperCase() === 'M') {
                             gender = 'Male';
                         } else if (gender.toUpperCase() === 'F') {
@@ -1671,7 +1675,10 @@
                         } else {
                             gender = 'Other';
                         }
-                        newTrainees.push({ name, platoon, rank, gender });
+
+                        if (name && platoon && rank && gender) {
+                            newTrainees.push({ name, platoon, rank, gender });
+                        }
                     }
                 }
             });
