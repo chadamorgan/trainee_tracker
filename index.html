@@ -1156,7 +1156,8 @@
         // Create a trainee card element
         const createTraineeCard = (trainee) => {
             const card = document.createElement('div');
-            card.className = 'bg-gray-50 p-4 rounded-lg shadow-sm cursor-pointer hover:bg-gray-100 transition-colors';
+            const genderBgClass = trainee.gender === 'Male' ? 'bg-blue-50' : trainee.gender === 'Female' ? 'bg-pink-50' : 'bg-gray-50';
+            card.className = `${genderBgClass} p-4 rounded-lg shadow-sm cursor-pointer hover:bg-gray-100 transition-colors`;
             card.dataset.id = trainee.id;
 
             // Gather all the necessary data
@@ -1400,7 +1401,7 @@
             `).join('');
 
             appointmentsListEl.querySelectorAll('.delete-appointment-btn').forEach(button => {
-                button.addEventListener('click', (e) => {
+                button.addEventListener('click', async (e) => {
                     e.stopPropagation();
                     const timestamp = e.currentTarget.dataset.timestamp;
                     showConfirmation("Delete Appointment", "Are you sure you want to delete this appointment?", async () => {
@@ -1661,7 +1662,14 @@
                     const platoon = parts[1].trim();
 
                     if (traineeInfo.length === 3 && traineeInfo[0] && traineeInfo[1] && traineeInfo[2] && platoon) {
-                        const [rank, name, gender] = traineeInfo;
+                        let [rank, name, gender] = traineeInfo;
+                        if (gender.toUpperCase() === 'M') {
+                            gender = 'Male';
+                        } else if (gender.toUpperCase() === 'F') {
+                            gender = 'Female';
+                        } else {
+                            gender = 'Other';
+                        }
                         newTrainees.push({ name, platoon, rank, gender });
                     }
                 }
