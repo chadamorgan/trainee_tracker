@@ -805,7 +805,7 @@
                     const appDate = new Date(app.date);
                     if (appDate >= today && appDate <= tenDaysFromNow) {
                         const daysLeft = Math.ceil((appDate - today) / (1000 * 60 * 60 * 24));
-                        upcoming.push({ name: trainee.name, description: app.description, daysLeft });
+                        upcoming.push({ fullName: `${trainee.rank} ${trainee.name}`, description: app.description, daysLeft });
                     }
                 });
             });
@@ -813,7 +813,7 @@
             if (upcoming.length > 0) {
                 const message = upcoming.map(item => {
                     const daysText = item.daysLeft === 0 ? 'today' : `${item.daysLeft} day${item.daysLeft === 1 ? '' : 's'}`;
-                    return `${item.name}: ${item.description} (${daysText} left)`;
+                    return `${item.fullName}: ${item.description} (${daysText} left)`;
                 }).join('; ');
                 
                 notificationMessageEl.textContent = `Upcoming Appointments: ${message}.`;
@@ -827,7 +827,7 @@
             if (upcoming.length > 0) {
                 upcoming.forEach(app => {
                     const listItem = document.createElement('li');
-                    listItem.textContent = `${app.name}: ${app.description}`;
+                    listItem.textContent = `${app.fullName}: ${app.description}`;
                     upcomingAppointmentsListEl.appendChild(listItem);
                 });
             } else {
@@ -848,7 +848,7 @@
                     const customNotes = JSON.parse(trainee.customNotes || '[]');
                     customNotes.forEach(note => allItems.push({ 
                         type: 'Note', 
-                        name: trainee.name, 
+                        fullName: `${trainee.rank} ${trainee.name}`, 
                         priority: note.priority, 
                         text: note.text, 
                         timestamp: note.timestamp,
@@ -906,6 +906,7 @@
                 allItems.forEach(item => {
                     const listItem = document.createElement('li');
                     const isTask = item.type === 'Task';
+                    const nameToDisplay = isTask ? 'TASK' : item.fullName;
                     const dueDateText = isTask && item.dueDate ? ` (Due: ${formatDate(item.dueDate)})` : '';
                     listItem.innerHTML = `
                         <span class="px-2 py-0.5 text-xs font-semibold rounded-full ${
@@ -913,7 +914,7 @@
                             item.priority === 'Medium' ? 'bg-yellow-200 text-yellow-800' :
                             'bg-gray-200 text-gray-800'
                         }">${item.priority}</span>
-                        <span class="ml-2">${isTask ? 'TASK' : item.name}: ${item.text}${dueDateText}</span>
+                        <span class="ml-2">${nameToDisplay}: ${item.text}${dueDateText}</span>
                     `;
                     priorityListEl.appendChild(listItem);
                 });
