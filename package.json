@@ -1,0 +1,34 @@
+{
+  "name": "drill-sergeant-trainee-tracker",
+  "version": "1.0.0",
+  "description": "A comprehensive web-based application for U.S. Army Drill Sergeants to manage their trainees throughout a 10-week Basic Combat Training cycle",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve .",
+    "dev": "npx serve . -l 3000",
+    "build": "echo 'No build process required for static site'",
+    "test": "echo 'Open test.html in your browser to verify setup'"
+  },
+  "keywords": [
+    "military",
+    "training",
+    "management",
+    "drill-sergeant",
+    "trainee-tracker",
+    "army",
+    "basic-combat-training"
+  ],
+  "author": "Drill Sergeant Trainee Tracker Team",
+  "license": "MIT",
+  "devDependencies": {
+    "serve": "^14.2.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/drill-sergeant-tracker.git"
+  },
+  "homepage": "https://yourusername.github.io/drill-sergeant-tracker",
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
