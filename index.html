@@ -1,3 +1,125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Drill Sergeant Trainee Tracker</title>
+    <meta name="description" content="Centralized accountability and task management for BCT platoons">
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-50 text-gray-900">
+    <header class="border-b bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between gap-4">
+        <h1 class="text-xl font-semibold">Drill Sergeant Trainee Tracker</h1>
+        <div class="flex items-center gap-3">
+          <label for="platoonSelect" class="text-sm text-gray-600">Platoon</label>
+          <select id="platoonSelect" class="border rounded-md px-3 py-2 text-sm bg-white">
+            <option value="All">All</option>
+            <option value="1st">1st</option>
+            <option value="2nd">2nd</option>
+            <option value="3rd">3rd</option>
+            <option value="4th">4th</option>
+          </select>
+          <div id="availability" class="ml-4 text-sm text-gray-700">
+            <span class="font-medium">Available:</span>
+            <span id="availabilityCount">0</span>
+            <span class="text-gray-500">/</span>
+            <span id="availabilityTotal">0</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+      <section id="statusCards" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3"></section>
+
+      <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 space-y-6">
+          <div class="bg-white border rounded-lg p-4">
+            <div class="flex items-center justify-between mb-3">
+              <h2 class="font-semibold">Roster</h2>
+              <div class="flex items-center gap-2">
+                <input id="rosterSearch" type="search" placeholder="Search name, rank..." class="border rounded-md px-3 py-2 text-sm w-56">
+                <button id="openBulkUpload" class="text-sm text-indigo-600 hover:underline">Bulk Upload</button>
+              </div>
+            </div>
+            <div id="roster" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <button id="openTrainingEvents" class="bg-indigo-600 text-white px-4 py-3 rounded-md hover:bg-indigo-700">Training Events</button>
+            <button id="openPlatoonTasks" class="bg-teal-600 text-white px-4 py-3 rounded-md hover:bg-teal-700">Platoon Tasks</button>
+          </div>
+        </div>
+
+        <div class="space-y-6">
+          <div class="bg-white border rounded-lg p-4">
+            <h2 class="font-semibold mb-3">Upcoming Appointments (10 days)</h2>
+            <ul id="upcomingAppointments" class="space-y-2 text-sm"></ul>
+          </div>
+          <div class="bg-white border rounded-lg p-4">
+            <div class="flex items-center justify-between mb-3">
+              <h2 class="font-semibold">Priority List</h2>
+              <button id="addPlatoonTask" class="text-sm text-indigo-600 hover:underline">Add Task</button>
+            </div>
+            <ul id="priorityList" class="space-y-2 text-sm"></ul>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div id="traineeModal" class="fixed inset-0 hidden items-end sm:items-center justify-center bg-black/30">
+      <div class="bg-white w-full sm:max-w-3xl sm:rounded-lg sm:shadow-xl max-h-[90vh] overflow-y-auto">
+        <div class="p-4 border-b flex items-center justify-between">
+          <h3 id="traineeModalTitle" class="font-semibold">Trainee</h3>
+          <button id="closeTraineeModal" class="text-gray-500 hover:text-gray-700">Close</button>
+        </div>
+        <div id="traineeModalBody" class="p-4 space-y-6"></div>
+      </div>
+    </div>
+
+    <div id="trainingEventsModal" class="fixed inset-0 hidden items-end sm:items-center justify-center bg-black/30">
+      <div class="bg-white w-full sm:max-w-2xl sm:rounded-lg sm:shadow-xl max-h-[90vh] overflow-y-auto">
+        <div class="p-4 border-b flex items-center justify-between">
+          <h3 class="font-semibold">Training Events</h3>
+          <button data-close="#trainingEventsModal" class="text-gray-500 hover:text-gray-700">Close</button>
+        </div>
+        <div id="trainingEventsBody" class="p-4 space-y-4"></div>
+      </div>
+    </div>
+
+    <div id="platoonTasksModal" class="fixed inset-0 hidden items-end sm:items-center justify-center bg-black/30">
+      <div class="bg-white w-full sm:max-w-2xl sm:rounded-lg sm:shadow-xl max-h-[90vh] overflow-y-auto">
+        <div class="p-4 border-b flex items-center justify-between">
+          <h3 class="font-semibold">Platoon Tasks</h3>
+          <button data-close="#platoonTasksModal" class="text-gray-500 hover:text-gray-700">Close</button>
+        </div>
+        <div id="platoonTasksBody" class="p-4 space-y-4"></div>
+      </div>
+    </div>
+
+    <div id="bulkUploadModal" class="fixed inset-0 hidden items-end sm:items-center justify-center bg-black/30">
+      <div class="bg-white w-full sm:max-w-2xl sm:rounded-lg sm:shadow-xl max-h-[90vh] overflow-y-auto">
+        <div class="p-4 border-b flex items-center justify-between">
+          <h3 class="font-semibold">Bulk Upload Trainees</h3>
+          <button data-close="#bulkUploadModal" class="text-gray-500 hover:text-gray-700">Close</button>
+        </div>
+        <div class="p-4 space-y-4">
+          <p class="text-sm text-gray-600">Paste lines in the format: Rank, Name, Gender; Platoon/Company</p>
+          <textarea id="bulkUploadText" class="w-full border rounded-md p-3 h-40 text-sm" placeholder="PV2, John Doe, Male; 1st/A"></textarea>
+          <div class="flex items-center justify-between">
+            <div class="text-sm text-gray-600">Example: <code class="bg-gray-100 px-1 py-0.5 rounded">SGT, Jane Smith, Female; 2nd/B</code></div>
+            <button id="processBulkUpload" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">Process</button>
+          </div>
+          <div id="bulkUploadPreview" class="text-sm"></div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+  </html>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
